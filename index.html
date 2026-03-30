@@ -486,7 +486,7 @@ pre {
     <span class="logo-text"><span>Lua</span>U Mastery</span>
   </div>
   <div id="progress-bar-container"><div id="progress-bar"></div></div>
-  <span id="progress-label">0 / 21</span>
+  <span id="progress-label">0 / 31</span>
 </header>
 
 <div id="overlay" onclick="closeSidebar()"></div>
@@ -534,6 +534,21 @@ pre {
     <div class="nav-item" onclick="showLesson(20)" id="nav-20"><span class="nav-icon">🧠</span>Best Practices<span class="nav-check" id="chk-20"></span></div>
   </div>
 
+
+  <div class="sidebar-section">
+    <div class="sidebar-group-label">Deep Roblox Systems</div>
+    <div class="nav-item" onclick="showLesson(21)" id="nav-21"><span class="nav-icon">📚</span>Standard Library Deep Dive<span class="nav-check" id="chk-21"></span></div>
+    <div class="nav-item" onclick="showLesson(22)" id="nav-22"><span class="nav-icon">⏱️</span>Task & Coroutines<span class="nav-check" id="chk-22"></span></div>
+    <div class="nav-item" onclick="showLesson(23)" id="nav-23"><span class="nav-icon">🕒</span>Time, os & DateTime<span class="nav-check" id="chk-23"></span></div>
+    <div class="nav-item" onclick="showLesson(24)" id="nav-24"><span class="nav-icon">🌐</span>Service Atlas<span class="nav-check" id="chk-24"></span></div>
+    <div class="nav-item" onclick="showLesson(25)" id="nav-25"><span class="nav-icon">🔔</span>Events & Signals<span class="nav-check" id="chk-25"></span></div>
+    <div class="nav-item" onclick="showLesson(26)" id="nav-26"><span class="nav-icon">🏷️</span>Instances & Tags<span class="nav-check" id="chk-26"></span></div>
+    <div class="nav-item" onclick="showLesson(27)" id="nav-27"><span class="nav-icon">🧍</span>Players & Humanoids<span class="nav-check" id="chk-27"></span></div>
+    <div class="nav-item" onclick="showLesson(28)" id="nav-28"><span class="nav-icon">🪟</span>UI, Input & Camera<span class="nav-check" id="chk-28"></span></div>
+    <div class="nav-item" onclick="showLesson(29)" id="nav-29"><span class="nav-icon">🎬</span>Tweening & Audio<span class="nav-check" id="chk-29"></span></div>
+    <div class="nav-item" onclick="showLesson(30)" id="nav-30"><span class="nav-icon">🛠️</span>Networking & Data<span class="nav-check" id="chk-30"></span></div>
+  </div>
+
 </nav>
 
 <main id="main">
@@ -546,9 +561,9 @@ pre {
     <p class="hero-subtitle">Complete coverage of Luau — Roblox's typed Lua dialect. From variables to advanced systems, networking, and production patterns.</p>
     <button class="hero-cta" onclick="showLesson(1)">Start Learning →</button>
     <div class="stats-row">
-      <div class="stat-card"><span class="stat-num">21</span><span class="stat-label">lessons</span></div>
-      <div class="stat-card"><span class="stat-num">90+</span><span class="stat-label">code examples</span></div>
-      <div class="stat-card"><span class="stat-num">30+</span><span class="stat-label">quizzes</span></div>
+      <div class="stat-card"><span class="stat-num">31</span><span class="stat-label">lessons</span></div>
+      <div class="stat-card"><span class="stat-num">120+</span><span class="stat-label">code examples</span></div>
+      <div class="stat-card"><span class="stat-num">40+</span><span class="stat-label">quizzes</span></div>
       <div class="stat-card"><span class="stat-num">100%</span><span class="stat-label">Luau accurate</span></div>
     </div>
   </section>
@@ -2409,13 +2424,755 @@ end</pre>
   </div>
 </div>
 
+<!-- LESSON 21: STANDARD LIBRARY DEEP DIVE -->
+<div class="lesson" id="lesson-21">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">📚</div>
+    <div>
+      <div class="lesson-title">Standard Library Deep Dive</div>
+      <div class="lesson-desc">math, table, string, utf8, buffer, and debug</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">📚 What the standard library actually gives you</div>
+    <div class="card-body">
+      <p>Luau's standard library is intentionally small and portable. It includes the core globals plus libraries such as <code style="font-family:JetBrains Mono,monospace">math</code>, <code style="font-family:JetBrains Mono,monospace">table</code>, <code style="font-family:JetBrains Mono,monospace">string</code>, <code style="font-family:JetBrains Mono,monospace">coroutine</code>, <code style="font-family:JetBrains Mono,monospace">utf8</code>, <code style="font-family:JetBrains Mono,monospace">os</code>, <code style="font-family:JetBrains Mono,monospace">debug</code>, <code style="font-family:JetBrains Mono,monospace">buffer</code>, and <code style="font-family:JetBrains Mono,monospace">vector</code>.</p>
+      <p>Roblox extends Luau with its own APIs, but the base libraries are still the same foundation for nearly every script.</p>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🧰 Everyday functions you will actually use</div>
+    <div class="card-body">
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local numbers = { 5, 2, 9, 1 }
+table.insert(numbers, 7)
+table.sort(numbers)
+print(table.concat(numbers, &quot;, &quot;))
+
+local phrase = &quot;Roblox Luau&quot;
+print(string.upper(phrase))
+print(string.sub(phrase, 1, 6))
+
+print(math.clamp(150, 0, 100))
+print(math.round(3.6))
+print(utf8.len(&quot;héllo&quot;))</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">📖 Library map</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Library</th><th>Best use</th><th>Notes</th></tr>
+        <tr><td class="td-type">math</td><td class="td-desc">Clamping, rounding, trig, random numbers</td><td class="td-desc">Use for gameplay math, not for time.</td></tr>
+        <tr><td class="td-type">table</td><td class="td-desc">Sort, insert, remove, pack, unpack</td><td class="td-desc">The main data-structure toolkit.</td></tr>
+        <tr><td class="td-type">string</td><td class="td-desc">Search, slice, format, replace</td><td class="td-desc">Treat strings as immutable.</td></tr>
+        <tr><td class="td-type">utf8</td><td class="td-desc">Unicode-aware length and slicing</td><td class="td-desc">Important for player names and UI text.</td></tr>
+        <tr><td class="td-type">buffer</td><td class="td-desc">Binary serialization</td><td class="td-desc">Use for compact data and network payloads.</td></tr>
+        <tr><td class="td-type">debug</td><td class="td-desc">Tracing and inspection</td><td class="td-desc">Powerful, but easy to misuse.</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="21">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which library is the best fit for sorting an array of numbers?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>string</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">B</span>math</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">C</span>table</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>utf8</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `table.sort` is the standard choice for sorting arrays.</div>
+    <div class="quiz-feedback fail">✗ Sorting arrays is handled by the `table` library, not `math` or `string`.</div>
+    <button class="quiz-next" onclick="showLesson(22)">Task &amp; Coroutines →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(20)">← Previous</button><button class="nav-btn next" onclick="showLesson(22)">Task &amp; Coroutines →</button></div>
+</div>
+
+<!-- LESSON 22: TASK SCHEDULER & COROUTINES -->
+<div class="lesson" id="lesson-22">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">⏱️</div>
+    <div>
+      <div class="lesson-title">Task Scheduler & Coroutines</div>
+      <div class="lesson-desc">Scheduling, yielding, and concurrent flow</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">⏱ task library</div>
+    <div class="card-body">
+      <p>The <code style="font-family:JetBrains Mono,monospace">task</code> library is Roblox's scheduler API. It is the modern replacement for old throttled timing patterns, and it works with the engine's scheduler.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>task.spawn(function()
+    print(&quot;runs immediately in the scheduler&quot;)
+end)
+
+task.defer(function()
+    print(&quot;runs on the next scheduler step&quot;)
+end)
+
+task.delay(2, function()
+    print(&quot;runs after roughly 2 seconds&quot;)
+end)
+
+local elapsed = task.wait(0.5)
+print(&quot;waited:&quot;, elapsed)</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🧵 coroutine control</div>
+    <div class="card-body">
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local co = coroutine.create(function()
+    print(&quot;inside coroutine&quot;)
+    local value = coroutine.yield(&quot;pause here&quot;)
+    print(&quot;resumed with&quot;, value)
+end)
+
+print(coroutine.status(co))
+local ok, message = coroutine.resume(co)
+print(ok, message)
+coroutine.resume(co, 123)</pre>
+      </div>
+      <div class="info-box tip">
+        <strong>Rule of thumb</strong>
+        <p>Use <code style="font-family:JetBrains Mono,monospace">task</code> for most Roblox timing work. Use coroutines when you need explicit pause/resume control, generators, or advanced flow orchestration.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">⚠️ Timing patterns</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Pattern</th><th>Use</th><th>Common mistake</th></tr>
+        <tr><td class="td-type">task.spawn</td><td class="td-desc">Start concurrent work</td><td class="td-desc">Using it for code that must block.</td></tr>
+        <tr><td class="td-type">task.defer</td><td class="td-desc">Run after the current stack unwinds</td><td class="td-desc">Expecting immediate execution.</td></tr>
+        <tr><td class="td-type">task.delay</td><td class="td-desc">Schedule a callback in the future</td><td class="td-desc">Using it as a precision timer.</td></tr>
+        <tr><td class="td-type">task.wait</td><td class="td-desc">Yield until the next scheduler step</td><td class="td-desc">Relying on exact frame timing.</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="22">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which one is the modern Roblox scheduler API?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>wait()</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>task</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>coroutine</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>spawn()</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `task` is the modern scheduler-focused library.</div>
+    <div class="quiz-feedback fail">✗ The modern API is `task`, not legacy `wait()` or raw `spawn()`.</div>
+    <button class="quiz-next" onclick="showLesson(23)">Time &amp; os →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(21)">← Previous</button><button class="nav-btn next" onclick="showLesson(23)">Time &amp; os →</button></div>
+</div>
+
+<!-- LESSON 23: TIME, DATETIME, AND OS -->
+<div class="lesson" id="lesson-23">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🕒</div>
+    <div>
+      <div class="lesson-title">Time, DateTime, and os</div>
+      <div class="lesson-desc">Timestamps, formatting, and measuring performance</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🕒 Time APIs</div>
+    <div class="card-body">
+      <p>Roblox Luau gives you several ways to think about time. The <code style="font-family:JetBrains Mono,monospace">os</code> library is heavily sandboxed, and its main purpose is system time and formatting. For richer date handling, Roblox also provides <code style="font-family:JetBrains Mono,monospace">DateTime</code>.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>print(os.time())                    -- Unix timestamp
+print(os.date(&quot;%Y-%m-%d&quot;))          -- formatted date
+print(os.clock())                   -- high-resolution elapsed time
+
+local now = DateTime.now()
+print(now:ToIsoDate())
+print(now:ToLocalTime())
+print(now:FormatUniversalTime(&quot;LL&quot;, &quot;en-us&quot;))</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">📅 When to use what</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>API</th><th>What it measures</th><th>Best use</th></tr>
+        <tr><td class="td-type">os.time</td><td class="td-desc">Unix timestamp in seconds</td><td class="td-desc">Saving dates, cooldowns, expirations</td></tr>
+        <tr><td class="td-type">os.date</td><td class="td-desc">Formatted date/time</td><td class="td-desc">Display strings and logs</td></tr>
+        <tr><td class="td-type">os.clock</td><td class="td-desc">High-resolution elapsed time</td><td class="td-desc">Performance measurement</td></tr>
+        <tr><td class="td-type">DateTime.now</td><td class="td-desc">Current moment as a DateTime object</td><td class="td-desc">Locale-aware formatting</td></tr>
+        <tr><td class="td-type">GetServerTimeNow</td><td class="td-desc">Client estimate of server time</td><td class="td-desc">Synchronized gameplay timers</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="23">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which API is best for measuring a code section for profiling?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>os.date</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">B</span>DateTime.now</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">C</span>os.clock</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>string.format</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `os.clock()` is the right choice for elapsed performance measurement.</div>
+    <div class="quiz-feedback fail">✗ Performance timing is what `os.clock()` is for.</div>
+    <button class="quiz-next" onclick="showLesson(24)">Service Atlas →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(22)">← Previous</button><button class="nav-btn next" onclick="showLesson(24)">Service Atlas →</button></div>
+</div>
+
+<!-- LESSON 24: SERVICE ATLAS & DATAMODEL -->
+<div class="lesson" id="lesson-24">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🌐</div>
+    <div>
+      <div class="lesson-title">Service Atlas & DataModel</div>
+      <div class="lesson-desc">Core Roblox services and how to access them</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🌐 DataModel and GetService</div>
+    <div class="card-body">
+      <p>In Roblox, services are singletons exposed through the <code style="font-family:JetBrains Mono,monospace">DataModel</code>. The standard pattern is <code style="font-family:JetBrains Mono,monospace">game:GetService("ServiceName")</code>. That is the safest way to access engine services.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local Players = game:GetService(&quot;Players&quot;)
+local ReplicatedStorage = game:GetService(&quot;ReplicatedStorage&quot;)
+local ServerStorage = game:GetService(&quot;ServerStorage&quot;)
+local RunService = game:GetService(&quot;RunService&quot;)
+local CollectionService = game:GetService(&quot;CollectionService&quot;)</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🧭 Common services atlas</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Service</th><th>Use</th><th>Typical side</th></tr>
+        <tr><td class="td-type">Players</td><td class="td-desc">Connected users and character lifecycle</td><td class="td-desc">Server + client</td></tr>
+        <tr><td class="td-type">RunService</td><td class="td-desc">Heartbeat, render step, simulation context</td><td class="td-desc">Server + client</td></tr>
+        <tr><td class="td-type">ReplicatedStorage</td><td class="td-desc">Shared modules and remotes</td><td class="td-desc">Server + client</td></tr>
+        <tr><td class="td-type">ServerStorage</td><td class="td-desc">Server-only storage</td><td class="td-desc">Server</td></tr>
+        <tr><td class="td-type">Workspace</td><td class="td-desc">3D world and in-world objects</td><td class="td-desc">Server + client</td></tr>
+        <tr><td class="td-type">StarterGui / PlayerGui</td><td class="td-desc">UI templates and active UI</td><td class="td-desc">Client</td></tr>
+        <tr><td class="td-type">TweenService</td><td class="td-desc">Smooth property interpolation</td><td class="td-desc">Server + client</td></tr>
+        <tr><td class="td-type">DataStoreService</td><td class="td-desc">Persistent player data</td><td class="td-desc">Server</td></tr>
+        <tr><td class="td-type">HttpService</td><td class="td-desc">JSON and web requests</td><td class="td-desc">Server + client limits</td></tr>
+        <tr><td class="td-type">CollectionService</td><td class="td-desc">Tags and grouped instance queries</td><td class="td-desc">Server + client</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🧱 Service rules that prevent bugs</div>
+    <div class="card-body">
+      <div class="info-box tip">
+        <strong>Use GetService</strong>
+        <p>Prefer <code style="font-family:JetBrains Mono,monospace">GetService</code> over direct indexing. It is explicit, resilient, and matches Roblox docs.</p>
+      </div>
+      <div class="info-box warn">
+        <strong>Respect replication</strong>
+        <p>Not every service and not every property exists on both server and client. Put server-authoritative logic in server scripts and only expose safe client-facing data.</p>
+      </div>
+      <div class="info-box note">
+        <strong>Think in ownership</strong>
+        <p>Storage, security, and authoritative state belong on the server. Rendering, input, and camera behavior belong on the client.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="24">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">What is the preferred way to access a Roblox service?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>game.ServiceName</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>game:GetService(&quot;ServiceName&quot;)</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>ServiceName.new()</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>require(ServiceName)</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `GetService` is the standard and safest access pattern.</div>
+    <div class="quiz-feedback fail">✗ Services are typically retrieved with `game:GetService(...)`.</div>
+    <button class="quiz-next" onclick="showLesson(25)">Events &amp; Signals →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(23)">← Previous</button><button class="nav-btn next" onclick="showLesson(25)">Events &amp; Signals →</button></div>
+</div>
+
+<!-- LESSON 25: EVENTS, SIGNALS, AND BINDABLES -->
+<div class="lesson" id="lesson-25">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🔔</div>
+    <div>
+      <div class="lesson-title">Events, Signals, and Bindables</div>
+      <div class="lesson-desc">Connect, react, and decouple systems</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🔔 Event-driven programming</div>
+    <div class="card-body">
+      <p>Roblox is event-heavy. You respond to state changes instead of polling constantly. Most engine objects expose events through <code style="font-family:JetBrains Mono,monospace">.Changed</code> or <code style="font-family:JetBrains Mono,monospace">:Connect()</code>.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local part = workspace.Part
+part.Touched:Connect(function(otherPart)
+    print(&quot;Touched by&quot;, otherPart.Name)
+end)
+
+part:GetPropertyChangedSignal(&quot;Transparency&quot;):Connect(function()
+    print(&quot;Transparency changed:&quot;, part.Transparency)
+end)</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🧷 Bindable vs Remote</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Type</th><th>What it connects</th><th>Use case</th></tr>
+        <tr><td class="td-type">BindableEvent</td><td class="td-desc">Script-to-script on the same side</td><td class="td-desc">Local module communication</td></tr>
+        <tr><td class="td-type">BindableFunction</td><td class="td-desc">Synchronous same-side call</td><td class="td-desc">Return values inside one environment</td></tr>
+        <tr><td class="td-type">RemoteEvent</td><td class="td-desc">Server-client or client-server message</td><td class="td-desc">Actions and notifications</td></tr>
+        <tr><td class="td-type">RemoteFunction</td><td class="td-desc">Request/response over the network</td><td class="td-desc">Querying data with a return value</td></tr>
+      </table>
+      <div class="info-box warn">
+        <strong>Never trust the client</strong>
+        <p>Remote events are not authorization. The server must validate every request, every time.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="25">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which object is used for same-side script communication?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>RemoteEvent</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>BindableEvent</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>DataStoreService</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>TweenService</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `BindableEvent` is for communication within the same environment.</div>
+    <div class="quiz-feedback fail">✗ Remote objects are for networking; bindables are for same-side communication.</div>
+    <button class="quiz-next" onclick="showLesson(26)">Instances &amp; Tags →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(24)">← Previous</button><button class="nav-btn next" onclick="showLesson(26)">Instances &amp; Tags →</button></div>
+</div>
+
+<!-- LESSON 26: INSTANCES, ATTRIBUTES, AND TAGS -->
+<div class="lesson" id="lesson-26">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🏷️</div>
+    <div>
+      <div class="lesson-title">Instances, Attributes, and Tags</div>
+      <div class="lesson-desc">Creation, parenting, metadata, and tagging</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🏗 Instance patterns</div>
+    <div class="card-body">
+      <p><code style="font-family:JetBrains Mono,monospace">Instance</code> is the base class for Roblox objects. Most gameplay code revolves around creating, parenting, destroying, and configuring instances.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local folder = Instance.new(&quot;Folder&quot;)
+folder.Name = &quot;Loot&quot;
+folder.Parent = workspace
+
+local part = Instance.new(&quot;Part&quot;)
+part.Anchored = true
+part.Size = Vector3.new(4, 1, 4)
+part:SetAttribute(&quot;LootValue&quot;, 25)
+part.Parent = folder
+
+print(part:GetAttribute(&quot;LootValue&quot;))</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🏷 Attributes and tags</div>
+    <div class="card-body">
+      <div class="grid-2">
+        <div class="mini-card">
+          <div class="mini-card-label">Attributes</div>
+          <div class="mini-card-val">Instance-local data</div>
+        </div>
+        <div class="mini-card">
+          <div class="mini-card-label">Tags</div>
+          <div class="mini-card-val">CollectionService groups</div>
+        </div>
+      </div>
+      <p style="margin-top:14px">Attributes are ideal for per-instance config and metadata. Tags are ideal for categories, selectors, and systems that need to find many objects fast.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local CollectionService = game:GetService(&quot;CollectionService&quot;)
+CollectionService:AddTag(workspace.Part, &quot;DamageZone&quot;)
+
+for _, inst in CollectionService:GetTagged(&quot;DamageZone&quot;) do
+    print(inst.Name)
+end</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="26">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">What should you use when you want to group many instances by category?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>Attributes</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>Tags via CollectionService</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>ModuleScript</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>TweenService</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! Tags via `CollectionService` are the right tool for category-based grouping.</div>
+    <div class="quiz-feedback fail">✗ Attributes store metadata on one instance; tags group many instances together.</div>
+    <button class="quiz-next" onclick="showLesson(27)">Players &amp; Characters →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(25)">← Previous</button><button class="nav-btn next" onclick="showLesson(27)">Players &amp; Characters →</button></div>
+</div>
+
+<!-- LESSON 27: PLAYERS, CHARACTERS, AND HUMANOIDS -->
+<div class="lesson" id="lesson-27">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🧍</div>
+    <div>
+      <div class="lesson-title">Players, Characters, and Humanoids</div>
+      <div class="lesson-desc">Respawns, health, and character lifecycle</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🧍 Player lifecycle</div>
+    <div class="card-body">
+      <p>Characters are created, destroyed, and respawned. The safest pattern is to listen to player and character events rather than assuming the character always exists.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local Players = game:GetService(&quot;Players&quot;)
+
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        local humanoid = character:WaitForChild(&quot;Humanoid&quot;)
+        humanoid.Died:Connect(function()
+            print(player.Name .. &quot; died&quot;)
+        end)
+    end)
+end)</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🤖 Humanoid essentials</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Concept</th><th>Use</th><th>Risk</th></tr>
+        <tr><td class="td-type">Humanoid</td><td class="td-desc">Character state, health, animations</td><td class="td-desc">Assuming it exists before character loads</td></tr>
+        <tr><td class="td-type">CharacterAdded</td><td class="td-desc">Runs whenever the model spawns</td><td class="td-desc">Forgetting respawns happen more than once</td></tr>
+        <tr><td class="td-type">WaitForChild</td><td class="td-desc">Safe child lookup</td><td class="td-desc">Waiting forever on a missing object</td></tr>
+        <tr><td class="td-type">CharacterRemoving</td><td class="td-desc">Cleanup before respawn</td><td class="td-desc">Leaving connections behind</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="27">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which event should you use to react whenever a player respawns?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>PlayerAdded</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>CharacterAdded</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>ChildRemoved</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Touched</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `CharacterAdded` fires each time the character model appears.</div>
+    <div class="quiz-feedback fail">✗ Respawns are handled by `CharacterAdded`, not `PlayerAdded`.</div>
+    <button class="quiz-next" onclick="showLesson(28)">UI &amp; Input →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(26)">← Previous</button><button class="nav-btn next" onclick="showLesson(28)">UI &amp; Input →</button></div>
+</div>
+
+<!-- LESSON 28: UI, INPUT, AND CAMERA -->
+<div class="lesson" id="lesson-28">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🪟</div>
+    <div>
+      <div class="lesson-title">UI, Input, and Camera</div>
+      <div class="lesson-desc">Building client interfaces that feel responsive</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🪟 UI hierarchy</div>
+    <div class="card-body">
+      <p>Roblox UI usually starts in <code style="font-family:JetBrains Mono,monospace">StarterGui</code>, moves into <code style="font-family:JetBrains Mono,monospace">PlayerGui</code>, and is composed of <code style="font-family:JetBrains Mono,monospace">GuiObject</code> descendants such as <code style="font-family:JetBrains Mono,monospace">Frame</code>, <code style="font-family:JetBrains Mono,monospace">TextButton</code>, and <code style="font-family:JetBrains Mono,monospace">ImageLabel</code>.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local gui = Instance.new(&quot;ScreenGui&quot;)
+local frame = Instance.new(&quot;Frame&quot;)
+local button = Instance.new(&quot;TextButton&quot;)
+
+gui.ResetOnSpawn = false
+frame.Size = UDim2.fromScale(0.3, 0.2)
+button.Text = &quot;Play&quot;
+
+button.Parent = frame
+frame.Parent = gui
+gui.Parent = game.Players.LocalPlayer:WaitForChild(&quot;PlayerGui&quot;)</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🎮 Input and camera basics</div>
+    <div class="card-body">
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local UserInputService = game:GetService(&quot;UserInputService&quot;)
+local RunService = game:GetService(&quot;RunService&quot;)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    print(&quot;pressed:&quot;, input.KeyCode)
+end)
+
+RunService.RenderStepped:Connect(function(dt)
+    -- client-side camera or UI animation work
+end)</pre>
+      </div>
+      <div class="info-box note">
+        <strong>Client rule</strong>
+        <p>Camera control and input response live on the client. Never depend on the client for authority over important game state.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="28">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Where does a player’s active UI normally live?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>ServerStorage</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>PlayerGui</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>ReplicatedStorage</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Workspace</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `PlayerGui` is the active UI container for each client.</div>
+    <div class="quiz-feedback fail">✗ Visible player UI belongs in `PlayerGui`, not server storage.</div>
+    <button class="quiz-next" onclick="showLesson(29)">Tweening &amp; Audio →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(27)">← Previous</button><button class="nav-btn next" onclick="showLesson(29)">Tweening &amp; Audio →</button></div>
+</div>
+
+<!-- LESSON 29: TWEENING, ANIMATION, AND AUDIO -->
+<div class="lesson" id="lesson-29">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🎬</div>
+    <div>
+      <div class="lesson-title">Tweening, Animation, and Audio</div>
+      <div class="lesson-desc">Motion, polish, and presentation systems</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🎬 TweenService</div>
+    <div class="card-body">
+      <p>Tweens are for smooth property transitions. They are ideal for UI motion, doors, fades, and polish effects.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local TweenService = game:GetService(&quot;TweenService&quot;)
+
+local info = TweenInfo.new(
+    0.35,
+    Enum.EasingStyle.Quad,
+    Enum.EasingDirection.Out
+)
+
+local tween = TweenService:Create(frame, info, {
+    Position = UDim2.fromScale(0.5, 0.5),
+    Transparency = 0
+})
+
+tween:Play()</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🎵 Animation and sound pipeline</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>System</th><th>Use</th><th>Important detail</th></tr>
+        <tr><td class="td-type">Animator</td><td class="td-desc">Plays character animations</td><td class="td-desc">Usually attached to Humanoid rigs</td></tr>
+        <tr><td class="td-type">AnimationController</td><td class="td-desc">Animation for non-humanoid models</td><td class="td-desc">Use when there is no Humanoid</td></tr>
+        <tr><td class="td-type">Sound</td><td class="td-desc">Audio playback</td><td class="td-desc">Think about replication and attenuation</td></tr>
+        <tr><td class="td-type">ParticleEmitter</td><td class="td-desc">Visual effects</td><td class="td-desc">Parent to a BasePart or Attachment</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="29">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which service should you use for smooth property transitions?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">A</span>TweenService</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">B</span>RunService</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>CollectionService</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>DataStoreService</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! `TweenService` is the dedicated interpolation API.</div>
+    <div class="quiz-feedback fail">✗ Smooth transitions are handled by `TweenService`.</div>
+    <button class="quiz-next" onclick="showLesson(30)">Networking &amp; Data →</button>
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(28)">← Previous</button><button class="nav-btn next" onclick="showLesson(30)">Networking &amp; Data →</button></div>
+</div>
+
+<!-- LESSON 30: NETWORKING, DATASTORES, AND PRODUCTION SYSTEMS -->
+<div class="lesson" id="lesson-30">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">🛠️</div>
+    <div>
+      <div class="lesson-title">Networking, DataStores, and Production Systems</div>
+      <div class="lesson-desc">Remotes, saving, modules, and safe architecture</div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-header">🌍 Networking and replication</div>
+    <div class="card-body">
+      <p>Networking in Roblox is about sending intent, validating it on the server, and replicating only what is safe. Remotes move messages; the server decides what is true.</p>
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>-- client
+RemoteEvent:FireServer(&quot;BuyItem&quot;, itemId)
+
+-- server
+RemoteEvent.OnServerEvent:Connect(function(player, action, itemId)
+    if action ~= &quot;BuyItem&quot; then return end
+    -- validate currency, ownership, cooldowns
+end)</pre>
+      </div>
+      <div class="info-box danger">
+        <strong>Security principle</strong>
+        <p>Never let the client directly decide money, damage, inventory, or progression.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">💾 DataStore, HTTP, and modules</div>
+    <div class="card-body">
+      
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre>local DataStoreService = game:GetService(&quot;DataStoreService&quot;)
+local HttpService = game:GetService(&quot;HttpService&quot;)
+
+local store = DataStoreService:GetDataStore(&quot;PlayerDataV1&quot;)
+local json = HttpService:JSONEncode({ coins = 100, level = 5 })
+
+local Main = {}
+function Main.Save(player, data) end
+return Main</pre>
+      </div>
+      <table class="data-table">
+        <tr><th>System</th><th>Purpose</th><th>Best practice</th></tr>
+        <tr><td class="td-type">DataStoreService</td><td class="td-desc">Persistent save data</td><td class="td-desc">Use retries and versioned keys</td></tr>
+        <tr><td class="td-type">HttpService</td><td class="td-desc">JSON and web requests</td><td class="td-desc">Validate responses and failures</td></tr>
+        <tr><td class="td-type">ModuleScript</td><td class="td-desc">Reusable code and systems</td><td class="td-desc">Return a table, function, or class-like object</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-header">🛠 Debugging and performance</div>
+    <div class="card-body">
+      <table class="data-table">
+        <tr><th>Tool</th><th>Use</th><th>Example</th></tr>
+        <tr><td class="td-type">print / warn / error</td><td class="td-desc">Basic diagnostics</td><td class="td-desc">Trace flow and bad data</td></tr>
+        <tr><td class="td-type">assert / pcall</td><td class="td-desc">Guard code and catch failures</td><td class="td-desc">Protect risky code paths</td></tr>
+        <tr><td class="td-type">os.clock</td><td class="td-desc">Performance timing</td><td class="td-desc">Measure a function block</td></tr>
+        <tr><td class="td-type">debug.traceback</td><td class="td-desc">Stack inspection</td><td class="td-desc">Use carefully in development</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="quiz-card" data-lesson="30">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">What is the first thing the server should do with any remote request?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>Trust it and execute</div>
+<div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>Validate it</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>Convert it to JSON</div>
+<div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Ignore all remotes</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! Validation comes before any action.</div>
+    <div class="quiz-feedback fail">✗ Remote input must be validated on the server before it changes game state.</div>
+    
+  </div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(29)">← Previous</button><button class="nav-btn next" onclick="finishCourse()">Finish Course →</button></div>
+</div>
+
 </main>
 </div>
 
 <div id="toast">✓ Copied to clipboard!</div>
 
 <script>
-const TOTAL = 21;
+const TOTAL = 31;
 const done = new Set();
 
 function showLesson(id) {
@@ -2532,7 +3289,7 @@ function finishCourse() {
         Course Complete!
       </h1>
       <p style="color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:14px;max-width:480px;margin:0 auto 32px;line-height:1.8">
-        You've covered all of LuaU — variables, types, operators, control flow, functions, tables, strings, metatables, OOP, the type system, coroutines, error handling, standard libraries, Roblox APIs, module patterns, events, remotes, task scheduling, persistence, and best practices.
+        You've covered all of LuaU — variables, types, operators, control flow, functions, tables, strings, metatables, OOP, the type system, coroutines, error handling, standard libraries, task scheduling, time APIs, Roblox services, events, instances, UI, tweening, networking, persistence, modules, debugging, and best practices.
       </p>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
         <button onclick="showLesson(0)" class="hero-cta" style="background:var(--bg3);color:var(--text);box-shadow:none;border:1px solid var(--border2)">← Back to Start</button>
