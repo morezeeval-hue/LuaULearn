@@ -435,6 +435,72 @@ pre {
 .mini-card-label { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
 .mini-card-val { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 4px; }
 
+
+/* LOCKED / ADVANCED PATH */
+#advanced-track { display: none; }
+#advanced-track.show { display: block; }
+
+.exam-card {
+  margin-bottom: 16px;
+}
+
+.exam-card .quiz-q {
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+
+.exam-opt.selected {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.exam-opt.correct {
+  border-color: var(--accent2);
+  background: rgba(0,255,179,0.08);
+  color: var(--accent2);
+}
+
+.exam-opt.wrong {
+  border-color: var(--accent3);
+  background: rgba(255,107,107,0.08);
+  color: var(--accent3);
+}
+
+.exam-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 18px 0 8px;
+}
+
+.exam-summary {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+
+.exam-summary.pass {
+  border-color: rgba(0,255,179,0.25);
+  background: rgba(0,255,179,0.08);
+  color: var(--accent2);
+}
+
+.exam-summary.fail {
+  border-color: rgba(255,107,107,0.25);
+  background: rgba(255,107,107,0.08);
+  color: var(--accent3);
+}
+
+.lock-banner {
+  border-left: 3px solid var(--accent5);
+  background: rgba(199,125,255,0.06);
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   :root { --sidebar-w: 280px; }
@@ -549,6 +615,22 @@ pre {
     <div class="nav-item" onclick="showLesson(30)" id="nav-30"><span class="nav-icon">🛠️</span>Networking & Data<span class="nav-check" id="chk-30"></span></div>
   </div>
 
+
+  <div class="sidebar-section">
+    <div class="sidebar-group-label">Core Assessment</div>
+    <div class="nav-item" onclick="showLesson(31)" id="nav-31">
+      <span class="nav-icon">🧪</span>Mastery Exam
+      <span class="nav-check" id="chk-31"></span>
+    </div>
+  </div>
+  <div class="sidebar-section" id="advanced-track">
+    <div class="sidebar-group-label">Advanced Path 🔒</div>
+    <div class="nav-item" onclick="showLesson(32)" id="nav-32"><span class="nav-icon">📦</span>Module Architecture<span class="nav-check" id="chk-32"></span></div>
+    <div class="nav-item" onclick="showLesson(33)" id="nav-33"><span class="nav-icon">📡</span>Networking & Security<span class="nav-check" id="chk-33"></span></div>
+    <div class="nav-item" onclick="showLesson(34)" id="nav-34"><span class="nav-icon">💾</span>DataStores & Persistence<span class="nav-check" id="chk-34"></span></div>
+    <div class="nav-item" onclick="showLesson(35)" id="nav-35"><span class="nav-icon">⚡</span>Performance & Profiling<span class="nav-check" id="chk-35"></span></div>
+    <div class="nav-item" onclick="showLesson(36)" id="nav-36"><span class="nav-icon">🏁</span>Production Capstone<span class="nav-check" id="chk-36"></span></div>
+  </div>
 </nav>
 
 <main id="main">
@@ -567,6 +649,14 @@ pre {
       <div class="stat-card"><span class="stat-num">100%</span><span class="stat-label">Luau accurate</span></div>
     </div>
   </section>
+
+
+  <div class="card">
+    <div class="card-header">🔒 Mastery Gate</div>
+    <div class="card-body">
+      <p>Finish the 31-question exam to unlock the Advanced Path. That track goes deeper into module architecture, networking, persistence, profiling, and production-ready Roblox systems.</p>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-header">🗺 What is LuaU?</div>
@@ -2011,12 +2101,12 @@ pre {
     </div>
     <div class="quiz-feedback ok">🎉 Correct! <code style="font-family:JetBrains Mono,monospace">task.wait()</code> uses the Heartbeat scheduler and is more accurate. The old <code>wait()</code> has a minimum wait of ~29ms and is deprecated.</div>
     <div class="quiz-feedback fail">✗ You should always prefer <code style="font-family:JetBrains Mono,monospace">task.wait()</code>. The old <code>wait()</code> is deprecated and imprecise (minimum ~29ms delay).</div>
-    <button class="quiz-next" onclick="finishCourse()">Complete Course 🎓</button>
+    <button class="quiz-next" onclick="showLesson(14)">Complete Course 🎓</button>
   </div>
 
   <div class="lesson-nav">
     <button class="nav-btn" onclick="showLesson(12)">← Standard Libs</button>
-    <button class="nav-btn next" onclick="finishCourse()">🎓 Complete!</button>
+    <button class="nav-btn next" onclick="showLesson(14)">🎓 Complete!</button>
   </div>
 </div>
 
@@ -2415,12 +2505,12 @@ end</pre>
     </div>
     <div class="quiz-feedback ok">✓ Correct! Clean code in Luau usually means local scope, modules, validation, and readable boundaries.</div>
     <div class="quiz-feedback fail">✗ The best practice is to keep code modular, local, and validated instead of relying on shared globals.</div>
-    <button class="quiz-next" onclick="finishCourse()">Complete Course 🎓</button>
+    <button class="quiz-next" onclick="showLesson(20)">Complete Course 🎓</button>
   </div>
 
   <div class="lesson-nav">
     <button class="nav-btn" onclick="showLesson(19)">← Saving Data</button>
-    <button class="nav-btn next" onclick="finishCourse()">🎓 Complete!</button>
+    <button class="nav-btn next" onclick="showLesson(20)">🎓 Complete!</button>
   </div>
 </div>
 
@@ -3163,7 +3253,285 @@ return Main</pre>
     <div class="quiz-feedback fail">✗ Remote input must be validated on the server before it changes game state.</div>
     
   </div>
-  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(29)">← Previous</button><button class="nav-btn next" onclick="finishCourse()">Finish Course →</button></div>
+  <div class="lesson-nav"><button class="nav-btn" onclick="showLesson(29)">← Previous</button><button class="nav-btn next" onclick="showLesson(31)">Mastery Exam →</button></div>
+</div>
+
+
+<!-- LESSON 31: MASTERY EXAM -->
+<div class="lesson" id="lesson-31">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#c77dff22,#c77dff44)">🧪</div>
+    <div>
+      <div class="lesson-title">Mastery Exam</div>
+      <div class="lesson-desc">Pass this to unlock the advanced path</div>
+    </div>
+  </div>
+
+  <div class="card lock-banner">
+    <div class="card-header">🔐 Unlock condition</div>
+    <div class="card-body">
+      <p>Answer the full exam. You need 27 / 31 or better to unlock the advanced course track.</p>
+      <div class="chip-row">
+        <span class="chip purple">31 questions</span>
+        <span class="chip blue">Core curriculum</span>
+        <span class="chip green">Pass mark: 87%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🧠 Exam notes</div>
+    <div class="card-body">
+      <p>This is a full recap across the core curriculum. It covers variables, operators, flow control, functions, tables, strings, metatables, OOP, Luau types, coroutines, errors, libraries, Roblox services, modules, events, instances, remotes, scheduling, persistence, and best practices.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🧾 Questions</div>
+    <div class="card-body">
+      <div id="exam-root"></div>
+      <div class="exam-toolbar">
+        <button class="quiz-next show" onclick="gradeExam()" style="display:inline-flex">Grade Exam</button>
+        <button class="nav-btn" onclick="resetExam()" style="flex:0 0 auto">Reset Answers</button>
+      </div>
+      <div id="exam-result" class="exam-summary">Answer all 31 questions, then grade the exam.</div>
+    </div>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(30)">← Back to Core</button>
+    <button class="nav-btn next" onclick="gradeExam()">Grade Exam →</button>
+  </div>
+</div>
+
+<!-- LESSON 32: MODULE ARCHITECTURE -->
+<div class="lesson" id="lesson-32">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00d4ff22,#00d4ff44)">📦</div>
+    <div>
+      <div class="lesson-title">Module Architecture</div>
+      <div class="lesson-desc">Build reusable systems instead of copy-paste scripts</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🏗 Design rules</div>
+    <div class="card-body">
+      <p>Use ModuleScripts to separate responsibilities: one module for stats, one for inventory, one for combat, one for UI. Return a table or function, keep state private, and require the module from the place that needs it.</p>
+      <div class="info-box tip">
+        <strong>Goal</strong>
+        <p>A module should expose a clean API, hide implementation details, and avoid depending on global state.</p>
+      </div>
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="kw">local</span> <span class="var">Inventory</span> <span class="op">=</span> <span class="op">{}</span>
+
+<span class="kw">function</span> <span class="var">Inventory</span><span class="op">.</span><span class="fn">new</span>()
+    <span class="kw">return</span> <span class="op">{</span>
+        <span class="prop">items</span> <span class="op">=</span> <span class="op">{}</span>
+    <span class="op">}</span>
+<span class="kw">end</span>
+
+<span class="kw">return</span> <span class="var">Inventory</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-card" data-lesson="32">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">What should a ModuleScript usually return?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>Nothing, always</div>
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>A reusable value like a table or function</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>Only a string</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Only a coroutine</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! Modules usually return a table or function that becomes the module API.</div>
+    <div class="quiz-feedback fail">✗ A ModuleScript is meant to export a reusable value, most often a table.</div>
+    <button class="quiz-next" onclick="showLesson(33)">Next Lesson →</button>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(31)">← Exam</button>
+    <button class="nav-btn next" onclick="showLesson(33)">Networking & Security →</button>
+  </div>
+</div>
+
+<!-- LESSON 33: NETWORKING & SECURITY -->
+<div class="lesson" id="lesson-33">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#50fa7b22,#50fa7b44)">📡</div>
+    <div>
+      <div class="lesson-title">Networking & Security</div>
+      <div class="lesson-desc">RemoteEvents, RemoteFunctions, and trust boundaries</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🛡 Server authority</div>
+    <div class="card-body">
+      <p>The client is allowed to request actions, but the server decides what actually happens. Validate types, ranges, distance, cooldowns, permissions, and ownership before changing game state.</p>
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="kw">local</span> <span class="var">Remote</span> <span class="op">=</span> <span class="var">ReplicatedStorage</span><span class="op">:</span><span class="fn">WaitForChild</span>(<span class="str">"Attack"</span>)
+
+<span class="var">Remote</span><span class="op">.</span><span class="fn">OnServerEvent</span><span class="op">:</span><span class="fn">Connect</span>(<span class="kw">function</span>(<span class="var">player</span><span class="op">,</span> <span class="var">damage</span>)
+    <span class="kw">if</span> <span class="kw">typeof</span>(<span class="var">damage</span>) <span class="op">~=</span> <span class="type">"number"</span> <span class="kw">then</span> <span class="kw">return</span> <span class="kw">end</span>
+    <span class="var">damage</span> <span class="op">=</span> <span class="fn">math.clamp</span>(<span class="var">damage</span><span class="op">,</span> <span class="num">0</span><span class="op">,</span> <span class="num">50</span>)
+<span class="kw">end</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-card" data-lesson="33">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Where should request validation happen for a RemoteEvent?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>Only on the client</div>
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>On the server before any action</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>Only in the UI</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Never</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! The client can be modified, so the server must validate.</div>
+    <div class="quiz-feedback fail">✗ Trust boundary lives on the server. Validate there first.</div>
+    <button class="quiz-next" onclick="showLesson(34)">Next Lesson →</button>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(32)">← Module Architecture</button>
+    <button class="nav-btn next" onclick="showLesson(34)">DataStores & Persistence →</button>
+  </div>
+</div>
+
+<!-- LESSON 34: DATASTORES & PERSISTENCE -->
+<div class="lesson" id="lesson-34">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#ffd93d22,#ffd93d44)">💾</div>
+    <div>
+      <div class="lesson-title">DataStores & Persistence</div>
+      <div class="lesson-desc">Save data safely, retry carefully, never assume success</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">💽 Save strategy</div>
+    <div class="card-body">
+      <p>Use server-side saving only. Wrap calls in <code style="font-family:JetBrains Mono,monospace">pcall</code>, prefer <code style="font-family:JetBrains Mono,monospace">UpdateAsync</code> for merged writes, and keep save payloads compact and versioned.</p>
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="kw">local</span> <span class="var">store</span> <span class="op">=</span> <span class="var">DataStoreService</span><span class="op">:</span><span class="fn">GetDataStore</span>(<span class="str">"PlayerData"</span>)
+
+<span class="kw">local</span> <span class="var">ok</span><span class="op">,</span> <span class="var">err</span> <span class="op">=</span> <span class="fn">pcall</span>(<span class="kw">function</span>()
+    <span class="var">store</span><span class="op">:</span><span class="fn">UpdateAsync</span>(<span class="str">"user_123"</span><span class="op">,</span> <span class="kw">function</span>(<span class="var">old</span>)
+        <span class="kw">return</span> <span class="op">{</span> <span class="prop">coins</span> <span class="op">=</span> <span class="num">100</span> <span class="op">}</span>
+    <span class="kw">end</span>)
+<span class="kw">end</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-card" data-lesson="34">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which call is best for merging saved data safely?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>GetAsync only</div>
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>UpdateAsync</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>InsertAsync</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>WaitAsync</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! UpdateAsync lets you read and write in one safer operation.</div>
+    <div class="quiz-feedback fail">✗ UpdateAsync is the standard tool for safe merged writes.</div>
+    <button class="quiz-next" onclick="showLesson(35)">Next Lesson →</button>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(33)">← Networking</button>
+    <button class="nav-btn next" onclick="showLesson(35)">Performance & Profiling →</button>
+  </div>
+</div>
+
+<!-- LESSON 35: PERFORMANCE & PROFILING -->
+<div class="lesson" id="lesson-35">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#00ffb322,#00ffb344)">⚡</div>
+    <div>
+      <div class="lesson-title">Performance & Profiling</div>
+      <div class="lesson-desc">Reduce allocations, measure first, optimize with intent</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">📈 Practical profiling</div>
+    <div class="card-body">
+      <p>Measure before optimizing. Cache repeated lookups, avoid per-frame table creation, and stop event connections when they are no longer needed. For timing, use <code style="font-family:JetBrains Mono,monospace">os.clock()</code> or built-in profiling tools during development.</p>
+      <div class="code-block">
+        <div class="code-bar"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">luau</span><button class="code-copy" onclick="copyCode(this)">copy</button></div>
+        <pre><span class="kw">local</span> <span class="var">start</span> <span class="op">=</span> <span class="fn">os.clock</span>()
+<span class="cmt">-- expensive work</span>
+<span class="kw">print</span>(<span class="str">`Elapsed: {os.clock() - start}`</span>)</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-card" data-lesson="35">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">Which function is useful for timing code execution?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">A</span>os.clock()</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">B</span>table.sort()</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>string.lower()</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>task.spawn()</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! os.clock() is commonly used for measuring elapsed time in code.</div>
+    <div class="quiz-feedback fail">✗ os.clock() is the timing function here.</div>
+    <button class="quiz-next" onclick="showLesson(36)">Next Lesson →</button>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(34)">← DataStores</button>
+    <button class="nav-btn next" onclick="showLesson(36)">Production Capstone →</button>
+  </div>
+</div>
+
+<!-- LESSON 36: PRODUCTION CAPSTONE -->
+<div class="lesson" id="lesson-36">
+  <div class="lesson-header">
+    <div class="lesson-icon" style="background:linear-gradient(135deg,#c77dff22,#c77dff44)">🏁</div>
+    <div>
+      <div class="lesson-title">Production Capstone</div>
+      <div class="lesson-desc">Put the full stack together like a real Roblox project</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🧩 Production layout</div>
+    <div class="card-body">
+      <p>A production game is usually split into Services, Modules, Remotes, UI, and shared configuration. The client handles presentation, the server handles authority, and modules keep logic reusable.</p>
+      <div class="info-box note">
+        <strong>Checklist</strong>
+        <p>Validate remotes, save safely, profile hot loops, keep modules small, and use clear naming everywhere.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quiz-card" data-lesson="36">
+    <div class="quiz-header"><span class="quiz-badge">QUIZ</span></div>
+    <div class="quiz-q">What is the safest rule for client-originated data?</div>
+    <div class="quiz-options">
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">A</span>Trust it by default</div>
+      <div class="quiz-opt" onclick="answer(this, true)"><span class="opt-key">B</span>Validate it on the server before use</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">C</span>Send it to every client</div>
+      <div class="quiz-opt" onclick="answer(this, false)"><span class="opt-key">D</span>Ignore all of it</div>
+    </div>
+    <div class="quiz-feedback ok">✓ Correct! The server decides what is real.</div>
+    <div class="quiz-feedback fail">✗ Server-side validation is required.</div>
+    <button class="quiz-next" onclick="completeJourney()">Complete Journey →</button>
+  </div>
+
+  <div class="lesson-nav">
+    <button class="nav-btn" onclick="showLesson(35)">← Performance</button>
+    <button class="nav-btn next" onclick="completeJourney()">Finish →</button>
+  </div>
 </div>
 
 </main>
@@ -3172,7 +3540,7 @@ return Main</pre>
 <div id="toast">✓ Copied to clipboard!</div>
 
 <script>
-const TOTAL = 31;
+let TOTAL = 31;
 const done = new Set();
 
 function showLesson(id) {
@@ -3318,6 +3686,233 @@ if (window.innerWidth >= 768) {
 // Init
 markDone(0);
 updateProgress();
+let advancedUnlocked = false;
+const EXAM_PASS_MARK = 27;
+const ADV_TOTAL = 36;
+let examRendered = false;
+
+const EXAM_QUESTIONS = [
+  { q: 'A declared but unassigned variable becomes what value?', o: ['0', 'false', 'nil', 'undefined'], c: 2, ok: 'Correct.', bad: 'Unassigned Luau variables are nil.' },
+  { q: 'What does 7 // 2 evaluate to?', o: ['3.5', '3', '4', '2'], c: 1, ok: 'Correct.', bad: 'Floor division rounds down.' },
+  { q: 'Which loop always runs at least once?', o: ['while', 'repeat...until', 'for', 'foreach'], c: 1, ok: 'Correct.', bad: 'repeat...until checks after the body.' },
+  { q: 'What is the safest modern form of conditional expression?', o: ['and/or trick', 'inline if then else', 'ternary ? :', 'switch'], c: 1, ok: 'Correct.', bad: 'Luau supports inline if expressions.' },
+  { q: 'Which data structure stores arrays and dictionaries?', o: ['string', 'table', 'buffer', 'userdata'], c: 1, ok: 'Correct.', bad: 'Tables are Luau’s universal container.' },
+  { q: 'Which operator concatenates strings?', o: ['+', '..', '#', '//'], c: 1, ok: 'Correct.', bad: 'Concatenation uses ..' },
+  { q: 'What does __index do in a metatable?', o: ['Deletes keys', 'Fallback lookup for missing keys', 'Creates threads', 'Sorts arrays'], c: 1, ok: 'Correct.', bad: '__index handles missing key lookups.' },
+  { q: 'What is the common OOP pattern in Luau?', o: ['Class.__index = Class', 'Class += Object', 'Class => Object', 'Class.isObject = true'], c: 0, ok: 'Correct.', bad: 'The class table is often used as its own __index.' },
+  { q: 'What does typing help catch earlier?', o: ['Network lag', 'Runtime bugs and mismatched values', 'All lag', 'GPU errors'], c: 1, ok: 'Correct.', bad: 'Types catch mismatches before runtime.' },
+  { q: 'Which task function schedules work immediately in the scheduler?', o: ['task.wait', 'task.defer', 'task.spawn', 'task.cancel'], c: 2, ok: 'Correct.', bad: 'task.spawn schedules a task to run.' },
+  { q: 'Which function catches errors without crashing the script?', o: ['pcall', 'warn', 'assert', 'type'], c: 0, ok: 'Correct.', bad: 'pcall wraps risky calls.' },
+  { q: 'Which library contains table.sort?', o: ['math', 'string', 'table', 'utf8'], c: 2, ok: 'Correct.', bad: 'table.sort is in the table library.' },
+  { q: 'Which is the preferred way to access Roblox services?', o: ['game.Players', 'game:GetService()', 'workspace:Get()', 'require(Service)'], c: 1, ok: 'Correct.', bad: 'GetService is the safe service access pattern.' },
+  { q: 'What does a ModuleScript usually export?', o: ['A reusable value', 'A scene', 'A sound', 'A screenshot'], c: 0, ok: 'Correct.', bad: 'Modules usually return a table or function.' },
+  { q: 'Which method connects a callback to an event?', o: ['Connect', 'Bind', 'Launch', 'Trace'], c: 0, ok: 'Correct.', bad: 'RBXScriptSignals use :Connect().' },
+  { q: 'What is a strong Instance workflow?', o: ['Parent first, configure later', 'Configure first, then parent', 'Never create instances', 'Only use globals'], c: 1, ok: 'Correct.', bad: 'Configure first, then parent.' },
+  { q: 'Where must remote validation happen?', o: ['Client', 'Server', 'Both equally', 'Not needed'], c: 1, ok: 'Correct.', bad: 'The server is the authority.' },
+  { q: 'Which task function runs on the next scheduler step?', o: ['task.spawn', 'task.defer', 'task.cancel', 'task.pause'], c: 1, ok: 'Correct.', bad: 'task.defer waits until the next step.' },
+  { q: 'Which service is used for saving player data?', o: ['DataStoreService', 'CollectionService', 'TweenService', 'Lighting'], c: 0, ok: 'Correct.', bad: 'Saving is done through DataStoreService.' },
+  { q: 'What should happen to event connections you no longer need?', o: ['Keep them forever', 'Disconnect them', 'Copy them', 'Serialize them'], c: 1, ok: 'Correct.', bad: 'Disconnecting prevents leaks.' },
+  { q: 'Which math function limits a value to a range?', o: ['math.clamp', 'math.sqrt', 'math.random', 'math.minmax'], c: 0, ok: 'Correct.', bad: 'math.clamp constrains the value.' },
+  { q: 'Which function pauses the current coroutine?', o: ['coroutine.resume', 'coroutine.create', 'coroutine.yield', 'coroutine.close'], c: 2, ok: 'Correct.', bad: 'yield pauses execution.' },
+  { q: 'Which timing function measures elapsed CPU time?', o: ['os.clock', 'os.date', 'os.time', 'DateTime.now'], c: 0, ok: 'Correct.', bad: 'os.clock is used for timing.' },
+  { q: 'Which call should be used to fetch a service safely?', o: ['GetService', 'FindService', 'LocateService', 'UseService'], c: 0, ok: 'Correct.', bad: 'GetService is the correct pattern.' },
+  { q: 'Which signal detects property changes?', o: ['Changed', 'Touched', 'GetPropertyChangedSignal', 'AncestryChanged'], c: 2, ok: 'Correct.', bad: 'GetPropertyChangedSignal is property-specific.' },
+  { q: 'Which service manages tags?', o: ['CollectionService', 'TextService', 'TweenService', 'RunService'], c: 0, ok: 'Correct.', bad: 'CollectionService handles tags.' },
+  { q: 'Which event fires when a character spawns?', o: ['CharacterAdded', 'PlayerRemoving', 'HumanoidDied', 'CharacterLoaded'], c: 0, ok: 'Correct.', bad: 'CharacterAdded is the spawn event.' },
+  { q: 'Which service binds actions to inputs?', o: ['ContextActionService', 'GuiService', 'UserInputService', 'RunService'], c: 0, ok: 'Correct.', bad: 'ContextActionService binds actions.' },
+  { q: 'Which service creates tweens?', o: ['TweenService', 'AnimationService', 'MotionService', 'EffectService'], c: 0, ok: 'Correct.', bad: 'TweenService creates tweens.' },
+  { q: 'What should never be trusted from the client?', o: ['Remote input', 'Server logs', 'Studio plugins', 'ModuleScripts'], c: 0, ok: 'Correct.', bad: 'Client input must be validated.' },
+  { q: 'Which library is best for string formatting and text utilities?', o: ['math', 'table', 'string', 'buffer'], c: 2, ok: 'Correct.', bad: 'The string library handles text helpers.' }
+];
+
+function renderExam() {
+  if (examRendered) return;
+  const root = document.getElementById('exam-root');
+  if (!root) return;
+  root.innerHTML = EXAM_QUESTIONS.map((q, qi) => `
+    <div class="quiz-card exam-card" data-correct="${q.c}" data-question="${qi}">
+      <div class="quiz-header"><span class="quiz-badge">QUESTION ${qi + 1}</span></div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.o.map((opt, oi) => `<div class="quiz-opt exam-opt" onclick="examPick(this, ${qi}, ${oi})"><span class="opt-key">${String.fromCharCode(65 + oi)}</span>${opt}</div>`).join('')}
+      </div>
+      <div class="quiz-feedback ok">✓ ${q.ok}</div>
+      <div class="quiz-feedback fail">✗ ${q.bad}</div>
+    </div>
+  `).join('');
+  examRendered = true;
+}
+
+function examPick(opt, qi, oi) {
+  const card = opt.closest('.exam-card');
+  card.dataset.selected = String(oi);
+  card.querySelectorAll('.exam-opt').forEach(o => {
+    o.classList.remove('selected', 'correct', 'wrong');
+  });
+  opt.classList.add('selected');
+}
+
+function resetExam() {
+  document.querySelectorAll('#exam-root .exam-card').forEach(card => {
+    delete card.dataset.selected;
+    card.classList.remove('pass', 'fail');
+    card.querySelectorAll('.exam-opt').forEach(o => o.classList.remove('selected', 'correct', 'wrong'));
+    card.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show'));
+  });
+  const result = document.getElementById('exam-result');
+  if (result) {
+    result.className = 'exam-summary';
+    result.textContent = 'Answer all 31 questions, then grade the exam.';
+  }
+}
+
+function gradeExam() {
+  renderExam();
+  const cards = [...document.querySelectorAll('#exam-root .exam-card')];
+  let score = 0;
+  let unanswered = 0;
+
+  cards.forEach(card => {
+    const selected = card.dataset.selected;
+    const correct = Number(card.dataset.correct);
+    const opts = [...card.querySelectorAll('.exam-opt')];
+    const okFb = card.querySelector('.quiz-feedback.ok');
+    const failFb = card.querySelector('.quiz-feedback.fail');
+
+    opts.forEach((opt, idx) => {
+      opt.classList.remove('correct', 'wrong');
+      if (idx === correct) opt.classList.add('correct');
+    });
+
+    if (selected === undefined) {
+      unanswered++;
+      return;
+    }
+
+    const chosen = Number(selected);
+    if (chosen === correct) {
+      score++;
+      card.classList.add('pass');
+      okFb.classList.add('show');
+    } else {
+      card.classList.add('fail');
+      failFb.classList.add('show');
+      if (opts[chosen]) opts[chosen].classList.add('wrong');
+    }
+  });
+
+  const result = document.getElementById('exam-result');
+  if (!result) return;
+
+  if (unanswered > 0) {
+    result.className = 'exam-summary fail';
+    result.textContent = `Answer every question first. ${unanswered} question(s) still need an answer.`;
+    return;
+  }
+
+  if (score >= EXAM_PASS_MARK) {
+    result.className = 'exam-summary pass';
+    result.textContent = `Passed: ${score}/31. Advanced Path unlocked.`;
+    unlockAdvanced(score);
+  } else {
+    result.className = 'exam-summary fail';
+    result.textContent = `Not yet: ${score}/31. Pass mark is ${EXAM_PASS_MARK}/31.`;
+  }
+}
+
+function unlockAdvanced(score) {
+  advancedUnlocked = true;
+  TOTAL = ADV_TOTAL;
+
+  const track = document.getElementById('advanced-track');
+  if (track) track.classList.add('show');
+
+  updateProgress();
+  showToast();
+
+  const result = document.getElementById('exam-result');
+  if (result) {
+    result.className = 'exam-summary pass';
+    result.textContent = `Passed: ${score}/31. Advanced Path unlocked.`;
+  }
+
+  setTimeout(() => showLesson(32), 350);
+}
+
+function completeJourney() {
+  advancedUnlocked = true;
+  TOTAL = ADV_TOTAL;
+  for (let i = 0; i <= 30; i++) markDone(i);
+  for (let i = 32; i <= 36; i++) markDone(i);
+  document.getElementById('advanced-track')?.classList.add('show');
+  updateProgress();
+
+  document.querySelectorAll('.lesson').forEach(el => el.classList.remove('active'));
+  const finish = document.createElement('div');
+  finish.className = 'lesson active';
+  finish.innerHTML = `
+    <div style="text-align:center;padding:60px 20px">
+      <div style="font-size:72px;margin-bottom:24px">🏆</div>
+      <h1 style="font-size:40px;font-weight:800;letter-spacing:-1px;margin-bottom:16px">
+        LuaU Mastery Complete
+      </h1>
+      <p style="color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:14px;max-width:520px;margin:0 auto 32px;line-height:1.8">
+        You have completed the core curriculum, passed the mastery exam, and finished the advanced path.
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <button onclick="showLesson(0)" class="hero-cta" style="background:var(--bg3);color:var(--text);box-shadow:none;border:1px solid var(--border2)">← Back to Start</button>
+        <button onclick="showLesson(32)" class="hero-cta">Review Advanced Path →</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('main').appendChild(finish);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showLesson(id) {
+  if (id >= 32 && !advancedUnlocked) {
+    id = 31;
+  }
+
+  document.querySelectorAll('.lesson').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+  const lesson = document.getElementById('lesson-' + id);
+  const nav = document.getElementById('nav-' + id);
+  if (lesson) lesson.classList.add('active');
+  if (nav) nav.classList.add('active');
+
+  if (id !== 31) markDone(id);
+  if (id === 31) renderExam();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+function markDone(id) {
+  if (id === 31) return;
+  done.add(id);
+  const chk = document.getElementById('chk-' + id);
+  const nav = document.getElementById('nav-' + id);
+  if (chk) chk.textContent = '✓';
+  if (nav) nav.classList.add('done');
+  if (id === 0 || id === 31) return;
+}
+
+function updateProgress() {
+  const pct = TOTAL > 0 ? (done.size / TOTAL) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = done.size + ' / ' + TOTAL;
+  const track = document.getElementById('advanced-track');
+  if (advancedUnlocked && track) track.classList.add('show');
+}
+
+function finishCourse() {
+  showLesson(31);
+}
+
 </script>
 </body>
 </html>
