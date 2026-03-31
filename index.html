@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LuaU Mastery — Complete Roblox Luau Course</title>
-<meta name="description" content="The complete free Roblox Luau programming course. 24 lessons, 120+ examples, quizzes.">
+<meta name="description" content="The complete free Roblox Luau programming course. 36 lessons, 180+ examples, quizzes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -24,6 +24,9 @@
 <!-- SCROLL TO TOP -->
 <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
+<!-- READING PROGRESS BAR -->
+<div id="reading-progress"><div id="reading-progress-fill"></div></div>
+
 <!-- KEYBOARD SHORTCUTS MODAL -->
 <div id="kbd-modal" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="kbd-panel">
@@ -40,528 +43,757 @@
   </div>
 </div>
 
+<!-- CERTIFICATE MODAL -->
+<div id="cert-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="cert-panel">
+    <h2>🎓 Certificate of Completion</h2>
+    <p style="color:var(--text2);margin-bottom:16px">Enter your name to generate your certificate:</p>
+    <input type="text" id="cert-name-input" placeholder="Your full name" spellcheck="false">
+    <button id="cert-generate-btn" onclick="generateCertificate()">Generate Certificate</button>
+    <div id="cert-preview" style="display:none">
+      <canvas id="cert-canvas" width="1100" height="780"></canvas>
+      <div class="cert-actions">
+        <button onclick="downloadCertificate()">⬇️ Download PNG</button>
+        <button onclick="printCertificate()">🖨️ Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header id="header">
-  <button id="sidebar-toggle" aria-label="Toggle sidebar">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="logo" onclick="showLesson(0)">
-    <div class="logo-mark">Lu</div>
-    LuaU<span>Mastery</span>
+  <div class="header-left">
+    <button id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+    <div class="logo" onclick="goHome()">
+      <div class="logo-icon">Lu</div>
+      <span class="logo-text">LuaU <span class="logo-accent">Mastery</span></span>
+    </div>
   </div>
-  <div id="search-box">
-    <span class="search-icon">🔍</span>
-    <input type="text" placeholder="Search lessons… ( / )" id="search-input" oninput="onSearch(this.value)" onfocus="onSearch(this.value)" autocomplete="off">
-    <div id="search-results"></div>
+  <div class="header-center">
+    <div class="search-box" id="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search lessons…" oninput="onSearch(this.value)" onfocus="showSearch()" autocomplete="off" spellcheck="false">
+      <span class="search-kbd">/</span>
+      <div class="search-results" id="search-results"></div>
+    </div>
   </div>
-  <div id="prog-wrap">
-    <div id="prog-track"><div id="prog-fill"></div></div>
-    <span id="prog-label">0 / 24</span>
+  <div class="header-right">
+    <span class="header-progress" id="header-progress">0%</span>
+    <button class="icon-btn" id="font-down-btn" onclick="changeFontSize(-1)" title="Decrease font size">A-</button>
+    <button class="icon-btn" id="font-up-btn" onclick="changeFontSize(1)" title="Increase font size">A+</button>
+    <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <button class="icon-btn" onclick="document.getElementById('kbd-modal').classList.add('show')" title="Keyboard shortcuts">⌨️</button>
   </div>
-  <button id="theme-toggle" class="kbd-hint header-btn" onclick="toggleTheme()" title="Toggle light/dark theme">☀️</button>
-  <div class="kbd-hint header-kbd-hint" onclick="document.getElementById('kbd-modal').classList.add('show')">?</div>
 </header>
 
-<!-- SIDEBAR OVERLAY -->
-<div id="sidebar-overlay"></div>
-
-
-<!-- MOBILE TOOLBAR -->
+<!-- MOBILE TOOLBAR (portrait) -->
 <div id="mobile-toolbar">
-  <div class="mob-search-wrap">
-    <span class="mob-search-icon">🔍</span>
-    <input type="text" class="mob-search" placeholder="Search lessons…" id="mob-search-input" oninput="onMobileSearch(this.value)" onfocus="onMobileSearch(this.value)" autocomplete="off">
-    <div id="mob-search-results"></div>
-  </div>
-  <button class="mob-btn" onclick="toggleTheme()" id="mob-theme-btn" title="Toggle theme">☀️</button>
-  <button class="mob-btn" onclick="document.getElementById('kbd-modal').classList.add('show')" title="Keyboard shortcuts">⌨️</button>
+  <button class="mob-btn" onclick="toggleTheme()" title="Theme">🌙</button>
+  <button class="mob-btn" onclick="document.getElementById('search-input').focus();showSearch()" title="Search">🔍</button>
+  <button class="mob-btn" onclick="document.getElementById('kbd-modal').classList.add('show')" title="Keys">⌨️</button>
+  <button class="mob-btn" onclick="changeFontSize(-1)" title="Font-">A-</button>
+  <button class="mob-btn" onclick="changeFontSize(1)" title="Font+">A+</button>
+  <span class="mob-progress" id="mob-progress">0%</span>
 </div>
 
-<!-- LAYOUT -->
-<div id="layout" style="display:flex;padding-top:var(--header-h);min-height:100vh">
-  <nav id="sidebar"></nav>
-  <main id="main"></main>
-</div>
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div class="sidebar-inner" id="sidebar-inner"></div>
+  <div class="sidebar-footer">
+    <div class="sidebar-progress-bar"><div class="sidebar-progress-fill" id="sidebar-progress-fill"></div></div>
+    <span class="sidebar-progress-label" id="sidebar-progress-label">0 / 0 complete</span>
+    <button class="sidebar-cert-btn" id="sidebar-cert-btn" onclick="showCertModal()" style="display:none">🎓 Get Certificate</button>
+    <button class="sidebar-reset-btn" onclick="resetProgress()">↺ Reset Progress</button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main"><div id="content"></div></main>
+
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti-canvas"></canvas>
 
 <script src="content.js"></script>
-
 <script>
-/* ══════════════════════════════════════════════════════════
-   LuaU Mastery v2 — Engine
-   Reads COURSE from content.js. Renders everything.
-   New features: loading screen, callouts, search, keyboard
-   shortcuts, bookmarks, scroll-to-top, mark-complete,
-   improved quiz with grading, feature cards on home, toast.
-══════════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let currentLesson = -1;
+let completed = JSON.parse(localStorage.getItem('luau_completed') || '{}');
+let bookmarked = JSON.parse(localStorage.getItem('luau_bookmarked') || '{}');
+let notes = JSON.parse(localStorage.getItem('luau_notes') || '{}');
+let darkMode = localStorage.getItem('luau_theme') !== 'light';
+let sidebarOpen = window.innerWidth > 900;
+let baseFontSize = parseInt(localStorage.getItem('luau_fontsize') || '15');
 
-const TOTAL = COURSE.lessons.length;
-const done = new Set(JSON.parse(localStorage.getItem('luau-done') || '[]'));
-const bookmarks = new Set(JSON.parse(localStorage.getItem('luau-bookmarks') || '[]'));
-let currentLesson = 0;
-
-// Difficulty/duration metadata per lesson
-const LESSON_META = [
-  null, // 0 = overview
-  {d:'Beginner',t:'8 min'},{d:'Beginner',t:'6 min'},{d:'Beginner',t:'10 min'},
-  {d:'Intermediate',t:'12 min'},{d:'Intermediate',t:'10 min'},{d:'Intermediate',t:'8 min'},
-  {d:'Intermediate',t:'12 min'},{d:'Intermediate',t:'14 min'},{d:'Advanced',t:'10 min'},
-  {d:'Intermediate',t:'8 min'},{d:'Intermediate',t:'10 min'},{d:'Intermediate',t:'8 min'},
-  {d:'Beginner',t:'6 min'},{d:'Intermediate',t:'12 min'},{d:'Intermediate',t:'10 min'},
-  {d:'Intermediate',t:'12 min'},{d:'Intermediate',t:'10 min'},{d:'Advanced',t:'14 min'},
-  {d:'Advanced',t:'16 min'},{d:'Intermediate',t:'10 min'},{d:'Intermediate',t:'12 min'},
-  {d:'Intermediate',t:'10 min'},{d:'Advanced',t:'16 min'}
-];
-
-// ─── SYNTAX HIGHLIGHTER ──────────────────────
-function highlight(code) {
-  const KW = /\b(local|function|end|if|then|else|elseif|for|in|do|while|repeat|until|return|break|continue|and|or|not|true|false|nil|type|export|typeof)\b/g;
-  const BI = /\b(print|warn|error|assert|pcall|xpcall|require|tostring|tonumber|setmetatable|getmetatable|rawset|rawget|select|unpack|ipairs|pairs|next|coroutine|task|table|string|math|buffer|bit32|os|debug|game|workspace|script|Instance|Vector3|Vector2|CFrame|Color3|BrickColor|UDim2|UDim|Enum|TweenInfo|Ray|tick|time|wait|spawn|delay|SharedTable)\b/g;
-  const e = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return code.split('\n').map(line => {
-    let l = e(line);
-    const tokens = [];
-    let idx = 0;
-    function stash(match) { const ph = '\x00T' + idx + '\x00'; tokens[idx] = match; idx++; return ph; }
-    l = l.replace(/(--.*)/g, (m) => stash('<span class="cmt">' + m + '</span>'));
-    l = l.replace(/("(?:[^"\\]|\\.)*")/g, (m) => stash('<span class="str">' + m + '</span>'));
-    l = l.replace(/('(?:[^'\\]|\\.)*')/g, (m) => stash('<span class="str">' + m + '</span>'));
-    l = l.replace(/(`(?:[^`\\]|\\.)*`)/g, (m) => stash('<span class="str">' + m + '</span>'));
-    l = l.replace(/\b(0[xXbB][0-9a-fA-F_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?)\b/g, '<span class="num">$1</span>');
-    l = l.replace(KW, '<span class="kw">$1</span>');
-    l = l.replace(BI, '<span class="fn">$1</span>');
-    l = l.replace(/\x00T(\d+)\x00/g, (_, i) => tokens[parseInt(i)]);
-    return l;
-  }).join('\n').trimEnd();
-}
-
-// ─── RENDERERS ──────────────────────────────────
-function renderCode(item) {
-  const lang = item.lang || 'luau';
-  const code = lang === 'luau' ? highlight(item.code) : item.code.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return `<div class="code-block"><div class="code-header"><span class="code-lang">${lang.toUpperCase()}</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code>${code}</code></pre></div>`;
-}
-
-const CALLOUT_ICONS = {tip:'💡',warn:'⚠️',note:'ℹ️',danger:'🚨'};
-function renderInfo(item) {
-  const icon = CALLOUT_ICONS[item.variant] || 'ℹ️';
-  return `<div class="callout ${item.variant}"><span class="callout-icon">${icon}</span><div><div class="callout-title">${item.title}</div><p>${item.text}</p></div></div>`;
-}
-
-function renderTable(item) {
-  const ths = item.headers.map(h => `<th>${h}</th>`).join('');
-  const trs = item.rows.map(row => {
-    const tds = row.map((cell, i) => `<td class="${i===0?'td-key':''}">${cell}</td>`).join('');
-    return `<tr>${tds}</tr>`;
-  }).join('');
-  return `<table class="data-table"><tr>${ths}</tr>${trs}</table>`;
-}
-
-function renderToggles(item) {
-  return item.items.map(t => `<div class="toggle-item${t.open?' open':''}"><div class="toggle-head" onclick="this.parentElement.classList.toggle('open')"><span>${t.title}</span><span class="toggle-arrow">▶</span></div><div class="toggle-body">${t.body}</div></div>`).join('');
-}
-
-function renderChips(item) {
-  return `<div class="chip-row">${item.items.map(c => `<span class="chip ${c.color}">${c.text}</span>`).join('')}</div>`;
-}
-
-function renderContent(items) {
-  return items.map(item => {
-    switch(item.type) {
-      case 'text': return `<p>${item.value}</p>`;
-      case 'code': return renderCode(item);
-      case 'info': return renderInfo(item);
-      case 'table': return renderTable(item);
-      case 'toggles': return renderToggles(item);
-      case 'chips': return renderChips(item);
-      default: return '';
-    }
-  }).join('');
-}
-
-function renderQuiz(quiz, lessonId) {
-  if (!quiz) return '';
-  const keys = ['A','B','C','D','E','F'];
-  const qid = `quiz-${lessonId}`;
-  const opts = quiz.options.map((o, i) =>
-    `<div class="qopt" data-correct="${o.correct}" data-qi="${i}" onclick="pickQuizAnswer(this,'${qid}')">
-      <div class="qopt-key">${keys[i]}</div><span>${o.text}</span>
-    </div>`
-  ).join('');
-  return `<div class="quiz-card" id="${qid}" data-graded="">
-    <span class="quiz-badge">QUIZ — TEST YOUR KNOWLEDGE</span>
-    <div class="quiz-q">${quiz.question}</div>
-    <div class="quiz-options">${opts}</div>
-    <div class="quiz-feedback fb-ok">✓ ${quiz.correct}</div>
-    <div class="quiz-feedback fb-fail">✗ ${quiz.incorrect}</div>
-  </div>`;
-}
-
-function renderLesson(lesson) {
-  let html = '';
-  if (lesson.isHero) {
-    html += `<section class="hero">
-      <div class="hero-badge"><div class="hero-badge-dot"></div>Roblox LuaU · Complete Curriculum</div>
-      <h1 class="hero-title">Master<br><span class="g1">Roblox Scripting</span><br>from<span class="g2"> Zero</span> to Pro</h1>
-      <p class="hero-sub">${COURSE.subtitle}</p>
-      <div class="hero-actions">
-        <button class="btn-primary" onclick="showLesson(1)">Start Learning →</button>
-        <button class="btn-ghost" onclick="showLesson(done.size>0?Math.max(...done)+1:1)">Continue Where I Left Off</button>
-      </div>
-      <div class="stats-row">${COURSE.stats.map(s =>
-        `<div class="stat-card"><span class="stat-num">${s.num}</span><span class="stat-label">${s.label}</span></div>`
-      ).join('')}</div>
-      <div class="features-grid" style="max-width:820px;margin:40px auto 0">
-        <div class="feature-card"><div class="feature-card-icon">🎯</div><h3>Interactive Quizzes</h3><p>Every lesson has a quiz with instant grading and feedback.</p></div>
-        <div class="feature-card"><div class="feature-card-icon">📌</div><h3>Bookmarks</h3><p>Bookmark lessons to come back to later. Saved locally.</p></div>
-        <div class="feature-card"><div class="feature-card-icon">⌨️</div><h3>Keyboard Shortcuts</h3><p>Navigate fast with arrow keys, search with /, and more.</p></div>
-        <div class="feature-card"><div class="feature-card-icon">📊</div><h3>Progress Tracking</h3><p>Mark lessons complete and track your progress visually.</p></div>
-        <div class="feature-card"><div class="feature-card-icon">🔍</div><h3>Full Search</h3><p>Search across all lessons and sections instantly.</p></div>
-        <div class="feature-card"><div class="feature-card-icon">📱</div><h3>Mobile Ready</h3><p>Responsive design works perfectly on phone and tablet.</p></div>
-      </div>
-    </section>`;
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  applyFontSize();
+  buildSidebar();
+  updateProgress();
+  const hash = parseInt(location.hash.replace('#',''));
+  if (!isNaN(hash) && hash >= 0 && hash < COURSE.lessons.length) {
+    renderLesson(hash);
   } else {
-    const meta = LESSON_META[lesson.id];
-    const isBookmarked = bookmarks.has(lesson.id);
-    const isDone = done.has(lesson.id);
-    const groupName = COURSE.groups.find(g => g.lessons.includes(lesson.id))?.label || '';
-    html += `<div class="lesson-eyebrow">${groupName} · Lesson ${lesson.id}</div>`;
-    html += `<h1 class="lesson-title">${lesson.icon} ${lesson.title}</h1>`;
-    html += `<div class="lesson-meta">`;
-    if (meta) html += `<span class="meta-pill">📊 ${meta.d}</span><span class="meta-pill">⏱ ${meta.t}</span>`;
-    html += `<span class="meta-pill bookmark${isBookmarked?' active':''}" onclick="toggleBookmark(${lesson.id},this)" title="Bookmark">🔖 ${isBookmarked?'Bookmarked':'Bookmark'}</span>`;
-    html += `</div>`;
+    renderHome();
   }
+  // Loading screen
+  let p = 0;
+  const fill = document.getElementById('loader-fill');
+  const iv = setInterval(() => {
+    p += Math.random() * 30 + 10;
+    if (p >= 100) { p = 100; clearInterval(iv); setTimeout(() => document.getElementById('loading-screen').classList.add('hide'), 200); }
+    fill.style.width = p + '%';
+  }, 120);
+  if (window.innerWidth <= 900) sidebarOpen = false;
+  document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
+  document.getElementById('main').classList.toggle('sidebar-open', sidebarOpen);
 
-  for (const section of lesson.sections) {
-    if (section.type === 'card') {
-      html += `<div class="card"><div class="card-header">${section.title}</div><div class="card-body">${renderContent(section.content)}</div></div>`;
-    }
-  }
+  // Reading progress
+  window.addEventListener('scroll', updateReadingProgress);
 
-  html += renderQuiz(lesson.quiz, lesson.id);
+  // Scroll-to-top
+  window.addEventListener('scroll', () => {
+    document.getElementById('scroll-top').classList.toggle('show', window.scrollY > 400);
+  });
+});
 
-  // Navigation
-  const prev = lesson.id > 0 ? lesson.id - 1 : null;
-  const next = lesson.id < TOTAL - 1 ? lesson.id + 1 : null;
-  const isDone = done.has(lesson.id);
-  html += '<div class="lesson-nav">';
-  if (prev !== null) html += `<button class="nav-btn" onclick="showLesson(${prev})">← ${COURSE.lessons[prev].title}</button>`;
-  else html += '<div></div>';
-  if (!lesson.isHero) html += `<button class="mark-done-btn${isDone?' completed':''}" id="mark-btn-${lesson.id}" onclick="markDoneBtn(${lesson.id},this)">${isDone?'✓ Completed':'✓ Mark Complete'}</button>`;
-  if (next !== null) html += `<button class="nav-btn primary" onclick="showLesson(${next})">${COURSE.lessons[next].title} →</button>`;
-  else html += `<button class="nav-btn primary" onclick="finishCourse()">Complete Course 🎓</button>`;
-  html += '</div>';
-
-  return html;
+// ═══════════════════════════════════════════════════════
+// FONT SIZE
+// ═══════════════════════════════════════════════════════
+function applyFontSize() {
+  document.body.style.fontSize = baseFontSize + 'px';
+}
+function changeFontSize(delta) {
+  baseFontSize = Math.max(12, Math.min(20, baseFontSize + delta));
+  localStorage.setItem('luau_fontsize', baseFontSize);
+  applyFontSize();
+  toast(`Font size: ${baseFontSize}px`);
 }
 
-// ─── SIDEBAR ──────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// READING PROGRESS BAR
+// ═══════════════════════════════════════════════════════
+function updateReadingProgress() {
+  const el = document.documentElement;
+  const scrollTop = el.scrollTop || document.body.scrollTop;
+  const scrollHeight = el.scrollHeight - el.clientHeight;
+  const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+  document.getElementById('reading-progress-fill').style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════
 function buildSidebar() {
-  const sb = document.getElementById('sidebar');
+  const el = document.getElementById('sidebar-inner');
   let html = '';
-  // Bookmarks section
-  html += `<div id="sb-bookmarks" style="display:none"><div class="sb-label">⭐ Bookmarks</div><div id="sb-bookmark-list"></div><div class="sb-divider"></div></div>`;
-  for (const group of COURSE.groups) {
-    html += `<div class="sb-label">${group.label}</div>`;
-    for (const id of group.lessons) {
-      const l = COURSE.lessons[id];
-      const isDone = done.has(id);
-      html += `<div class="sb-item${id===0?' active':''}${isDone?' done':''}" id="nav-${id}" onclick="showLesson(${id})">
-        <span class="sb-icon">${l.icon}</span><span>${l.title}</span>
-        <span class="sb-check" id="chk-${id}">${isDone?'✓':''}</span>
+  for (const g of COURSE.groups) {
+    html += `<div class="sb-group"><div class="sb-group-label">${g.label}</div>`;
+    for (const id of g.lessons) {
+      const L = COURSE.lessons.find(l => l.id === id);
+      if (!L) continue;
+      const done = completed[id];
+      const bk = bookmarked[id];
+      html += `<div class="sb-item ${done?'done':''}" data-id="${id}" onclick="renderLesson(${id})">
+        <span class="sb-dot ${done?'done':''}"></span>
+        <span class="sb-icon">${L.icon}</span>
+        <span class="sb-title">${L.title}</span>
+        ${bk?'<span class="sb-bk">★</span>':''}
       </div>`;
     }
-    html += '<div class="sb-divider"></div>';
+    html += `</div>`;
   }
-  sb.innerHTML = html;
-  updateBookmarksSidebar();
+  el.innerHTML = html;
 }
 
-// ─── NAVIGATION ──────────────────────────────────
-function showLesson(id) {
-  currentLesson = id;
-  const main = document.getElementById('main');
-  main.innerHTML = `<div class="lesson active">${renderLesson(COURSE.lessons[id])}</div>`;
-
-  document.querySelectorAll('.sb-item').forEach(el => el.classList.remove('active'));
-  const nav = document.getElementById('nav-' + id);
-  if (nav) { nav.classList.add('active'); nav.scrollIntoView({block:'nearest'}); }
-
-  updateProgress();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (window.innerWidth < 768) closeSidebar();
-  history.replaceState(null, '', '#lesson-' + id);
-}
-
-function markDone(id) {
-  done.add(id);
-  try { localStorage.setItem('luau-done', JSON.stringify([...done])); } catch(e) {}
-  const chk = document.getElementById('chk-' + id);
-  const nav = document.getElementById('nav-' + id);
-  if (chk) chk.textContent = '✓';
-  if (nav) nav.classList.add('done');
-  updateProgress();
-}
-
-function markDoneBtn(id, btn) {
-  if (done.has(id)) return;
-  markDone(id);
-  btn.textContent = '✓ Completed';
-  btn.classList.add('completed');
-  toast('✓ Lesson marked complete!');
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  document.getElementById('sidebar').classList.toggle('open', sidebarOpen);
+  document.getElementById('main').classList.toggle('sidebar-open', sidebarOpen);
 }
 
 function updateProgress() {
-  const pct = TOTAL > 0 ? (done.size / TOTAL) * 100 : 0;
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = `${done.size} / ${TOTAL}`;
-}
+  const total = COURSE.lessons.filter(l=>l.quiz).length;
+  const done = Object.keys(completed).filter(k=>completed[k]).length;
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  document.getElementById('header-progress').textContent = pct + '%';
+  document.getElementById('mob-progress').textContent = pct + '%';
+  document.getElementById('sidebar-progress-fill').style.width = pct + '%';
+  document.getElementById('sidebar-progress-label').textContent = `${done} / ${total} complete`;
 
-// ─── BOOKMARKS ──────────────────────────────────
-function toggleBookmark(id, btn) {
-  if (bookmarks.has(id)) {
-    bookmarks.delete(id);
-    if(btn){btn.classList.remove('active');btn.innerHTML='🔖 Bookmark';}
-    toast('Bookmark removed');
+  // Show certificate button when 100%
+  const certBtn = document.getElementById('sidebar-cert-btn');
+  if (done >= total && total > 0) {
+    certBtn.style.display = 'block';
   } else {
-    bookmarks.add(id);
-    if(btn){btn.classList.add('active');btn.innerHTML='🔖 Bookmarked';}
-    toast('🔖 Lesson bookmarked!');
+    certBtn.style.display = 'none';
   }
-  try { localStorage.setItem('luau-bookmarks', JSON.stringify([...bookmarks])); } catch(e) {}
-  updateBookmarksSidebar();
-}
 
-function updateBookmarksSidebar() {
-  const wrap = document.getElementById('sb-bookmarks');
-  const list = document.getElementById('sb-bookmark-list');
-  if (!wrap || !list) return;
-  if (bookmarks.size === 0) { wrap.style.display = 'none'; return; }
-  wrap.style.display = 'block';
-  list.innerHTML = [...bookmarks].map(id => {
-    const l = COURSE.lessons[id];
-    if (!l) return '';
-    return `<div class="sb-item" onclick="showLesson(${id})"><span class="sb-icon">${l.icon}</span><span>${l.title}</span></div>`;
-  }).join('');
-}
-
-// ─── QUIZ ──────────────────────────────────
-function pickQuizAnswer(opt, qid) {
-  const card = document.getElementById(qid);
-  if (card.dataset.graded === 'true') return;
-  card.dataset.graded = 'true';
-
-  const isCorrect = opt.dataset.correct === 'true';
-  const opts = card.querySelectorAll('.qopt');
-  opts.forEach(o => {
-    o.classList.add('disabled');
-    if (o.dataset.correct === 'true') o.classList.add('is-correct');
-  });
-
-  if (isCorrect) {
-    opt.classList.add('is-correct');
-    card.querySelector('.fb-ok').classList.add('show');
-    card.classList.add('correct-card');
-    toast('✓ Correct!');
-    markDone(currentLesson);
-    const btn = document.getElementById('mark-btn-' + currentLesson);
-    if (btn) { btn.textContent = '✓ Completed'; btn.classList.add('completed'); }
-  } else {
-    opt.classList.add('is-wrong');
-    card.querySelector('.fb-fail').classList.add('show');
-    card.classList.add('wrong-card');
-  }
-}
-
-// ─── SEARCH ──────────────────────────────────
-function searchLessons(q) {
-  const results = [];
-  for (const lesson of COURSE.lessons) {
-    let found = false;
-    if (lesson.title.toLowerCase().includes(q) || lesson.desc.toLowerCase().includes(q)) found = true;
-    if (!found) {
-      for (const s of lesson.sections) {
-        if (s.title && s.title.toLowerCase().includes(q)) { found = true; break; }
-        if (s.content) {
-          for (const item of s.content) {
-            if (item.type === 'text' && item.value && item.value.toLowerCase().includes(q)) { found = true; break; }
-            if (item.type === 'code' && item.code && item.code.toLowerCase().includes(q)) { found = true; break; }
-            if (item.items) {
-              for (const sub of item.items) {
-                if ((sub.title && sub.title.toLowerCase().includes(q)) || (sub.body && sub.body.toLowerCase().includes(q)) || (sub.text && sub.text.toLowerCase().includes(q))) { found = true; break; }
-              }
-              if (found) break;
-            }
-          }
-          if (found) break;
-        }
-      }
-    }
-    if (found) results.push(lesson);
-  }
-  return results;
-}
-
-function onSearch(query) {
-  const box = document.getElementById('search-results');
-  if (!query || query.length < 2) { box.classList.remove('show'); return; }
-  const q = query.toLowerCase();
-  const results = searchLessons(q);
-  if (results.length === 0) { box.classList.remove('show'); return; }
-  const group = id => { for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; } return ''; };
-  box.innerHTML = results.slice(0, 8).map(r => `
-    <div class="search-item" onclick="showLesson(${r.id});document.getElementById('search-input').value='';document.getElementById('search-results').classList.remove('show');">
-      <span class="si-icon">${r.icon}</span><div><div class="si-title">${r.title}</div><div class="si-group">${group(r.id)}</div></div>
-    </div>`).join('');
-  box.classList.add('show');
-}
-document.addEventListener('click', e => { if (!e.target.closest('#search-box')) document.getElementById('search-results').classList.remove('show'); });
-
-// ─── SIDEBAR TOGGLE ──────────────────────────
-function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('sidebar-overlay');
-  const btn = document.getElementById('sidebar-toggle');
-  if (window.innerWidth < 768) {
-    const isOpen = sb.classList.contains('open');
-    if (isOpen) closeSidebar(); else { sb.classList.add('open'); ov.classList.add('show'); btn.classList.add('open'); }
-  } else {
-    sb.classList.toggle('closed');
-    btn.classList.toggle('open');
-    document.getElementById('main').classList.toggle('expanded');
-  }
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('show');
-  document.getElementById('sidebar-toggle').classList.remove('open');
-}
-document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
-document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
-
-// ─── COPY CODE ──────────────────────────────────
-function copyCode(btn) {
-  const pre = btn.closest('.code-block').querySelector('pre');
-  navigator.clipboard.writeText(pre.innerText).then(() => {
-    btn.textContent = 'Copied!'; btn.classList.add('copied');
-    toast('📋 Copied to clipboard!');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  // Update sidebar dots
+  document.querySelectorAll('.sb-item').forEach(el => {
+    const id = el.dataset.id;
+    el.classList.toggle('done', !!completed[id]);
+    const dot = el.querySelector('.sb-dot');
+    if (dot) dot.classList.toggle('done', !!completed[id]);
   });
 }
 
-// ─── KEYBOARD ──────────────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-  if (e.key === 'ArrowRight' && currentLesson < TOTAL - 1) showLesson(currentLesson + 1);
-  else if (e.key === 'ArrowLeft' && currentLesson > 0) showLesson(currentLesson - 1);
-  else if (e.key === '/' || e.key === 'k' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); document.getElementById('search-input')?.focus(); }
-  else if (e.key === '?' || (e.key === '/' && e.shiftKey)) document.getElementById('kbd-modal').classList.toggle('show');
-  else if (e.key === 'Escape') { document.getElementById('kbd-modal').classList.remove('show'); document.getElementById('search-results').classList.remove('show'); }
-  else if (e.key === 'h' || e.key === 'H') showLesson(0);
-  else if (e.key === 's' || e.key === 'S') toggleSidebar();
-  else if (e.key === 'd' || e.key === 'D') { if (currentLesson > 0 && !done.has(currentLesson)) { markDone(currentLesson); const btn = document.getElementById('mark-btn-'+currentLesson); if(btn){btn.textContent='✓ Completed';btn.classList.add('completed');} toast('✓ Lesson marked complete!'); } }
-  else if (e.key === 't' || e.key === 'T') toggleTheme();
-  else if (e.key === 'b' || e.key === 'B') { if (currentLesson > 0) toggleBookmark(currentLesson, document.querySelector('.meta-pill.bookmark')); }
-});
-
-// ─── SCROLL ──────────────────────────────────
-window.addEventListener('scroll', () => {
-  const btn = document.getElementById('scroll-top');
-  if (window.scrollY > 400) btn.classList.add('show');
-  else btn.classList.remove('show');
-});
-
-// ─── FINISH ──────────────────────────────────
-function finishCourse() {
-  for (let i = 0; i < TOTAL; i++) markDone(i);
+function resetProgress() {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  completed = {};
+  bookmarked = {};
+  notes = {};
+  localStorage.removeItem('luau_completed');
+  localStorage.removeItem('luau_bookmarked');
+  localStorage.removeItem('luau_notes');
+  buildSidebar();
   updateProgress();
-  document.getElementById('main').innerHTML = `<div class="lesson active"><div class="completion-view">
-    <div class="trophy">🎓</div>
-    <h1>Course Complete!</h1>
-    <p>You've mastered LuaU — from variables to parallel computing and performance optimization. Every concept, library, service, and pattern.</p>
-    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
-      <button onclick="showLesson(0)" class="btn-ghost">← Back to Start</button>
-      <button onclick="showLesson(1)" class="btn-primary">Review Lessons →</button>
-    </div>
-  </div></div>`;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  toast('🎉 Congratulations! Course complete!');
+  toast('Progress reset!');
 }
 
-// ─── TOAST ──────────────────────────────────
+// ═══════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════
+function applyTheme() {
+  document.body.classList.toggle('light', !darkMode);
+  const btns = document.querySelectorAll('#theme-toggle, .mob-btn');
+  // update icon handled by CSS
+}
+function toggleTheme() {
+  darkMode = !darkMode;
+  localStorage.setItem('luau_theme', darkMode ? 'dark' : 'light');
+  applyTheme();
+  toast(darkMode ? 'Dark mode' : 'Light mode');
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
 let toastTimer;
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-
-// ─── THEME TOGGLE ──────────────────────────
-function toggleTheme() {
-  const html = document.documentElement;
-  const isLight = html.getAttribute('data-theme') === 'light';
-  html.setAttribute('data-theme', isLight ? 'dark' : 'light');
-  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
-  const mobBtn = document.getElementById('mob-theme-btn');
-  if (mobBtn) mobBtn.textContent = isLight ? '☀️' : '🌙';
-  localStorage.setItem('luau-theme', isLight ? 'dark' : 'light');
+// ═══════════════════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════════════════
+function showSearch() { document.getElementById('search-box').classList.add('active'); }
+function hideSearch() { setTimeout(() => document.getElementById('search-box').classList.remove('active'), 200); }
+function onSearch(q) {
+  const el = document.getElementById('search-results');
+  if (!q.trim()) { el.innerHTML = ''; return; }
+  const low = q.toLowerCase();
+  const results = COURSE.lessons.filter(l =>
+    l.title.toLowerCase().includes(low) || l.desc.toLowerCase().includes(low)
+  ).slice(0, 8);
+  el.innerHTML = results.map(l => `<div class="search-item" onmousedown="renderLesson(${l.id});hideSearch()"><span>${l.icon}</span> ${l.title}</div>`).join('');
 }
-(function() {
-  const saved = localStorage.getItem('luau-theme');
-  if (saved === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = '🌙';
-    const mobBtn = document.getElementById('mob-theme-btn');
-    if (mobBtn) mobBtn.textContent = '🌙';
+
+// ═══════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════
+function goHome() { currentLesson = -1; location.hash = ''; renderHome(); }
+function renderHome() {
+  currentLesson = -1;
+  const c = document.getElementById('content');
+  // Stats
+  let statsHtml = COURSE.stats.map(s => `<div class="stat"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`).join('');
+
+  // Lesson grid with completion indicators
+  let gridHtml = '';
+  for (const g of COURSE.groups) {
+    gridHtml += `<div class="home-group"><h3 class="home-group-label">${g.label}</h3><div class="home-cards">`;
+    for (const id of g.lessons) {
+      const L = COURSE.lessons.find(l => l.id === id);
+      if (!L) continue;
+      const done = completed[id];
+      gridHtml += `<div class="home-card ${done?'completed':''}" style="--card-clr:${L.color}" onclick="renderLesson(${id})">
+        <div class="home-card-status">${done?'✅':''}</div>
+        <div class="home-card-icon">${L.icon}</div>
+        <div class="home-card-title">${L.title}</div>
+        <div class="home-card-desc">${L.desc}</div>
+      </div>`;
+    }
+    gridHtml += `</div></div>`;
   }
-})();
-
-// ─── MOBILE SEARCH ──────────────────────────
-function onMobileSearch(query) {
-  const box = document.getElementById('mob-search-results');
-  if (!query || query.length < 2) { box.classList.remove('show'); return; }
-  const results = searchLessons(query.toLowerCase());
-  if (results.length === 0) { box.classList.remove('show'); return; }
-  const group = id => { for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; } return ''; };
-  box.innerHTML = results.slice(0, 8).map(r => `
-    <div class="search-item" onclick="showLesson(${r.id});document.getElementById('mob-search-input').value='';document.getElementById('mob-search-results').classList.remove('show');">
-      <span class="si-icon">${r.icon}</span><div><div class="si-title">${r.title}</div><div class="si-group">${group(r.id)}</div></div>
-    </div>`).join('');
-  box.classList.add('show');
+  c.innerHTML = `
+    <div class="hero">
+      <h1 class="hero-title">${COURSE.title}</h1>
+      <p class="hero-sub">${COURSE.subtitle}</p>
+      <div class="stats">${statsHtml}</div>
+      <button class="hero-btn" onclick="renderLesson(0)">Start Learning →</button>
+    </div>
+    <div class="home-grid">${gridHtml}</div>`;
+  window.scrollTo({top: 0});
+  highlightSidebar(-1);
 }
-document.addEventListener('click', e => {
-  if (!e.target.closest('#mobile-toolbar')) document.getElementById('mob-search-results').classList.remove('show');
-});
 
-// ─── INIT ──────────────────────────────────
-(function init() {
-  // Loading animation
-  const fill = document.getElementById('loader-fill');
-  let pct = 0;
-  const loadInterval = setInterval(() => {
-    pct += Math.random() * 30 + 10;
-    if (pct > 100) pct = 100;
-    fill.style.width = pct + '%';
-    if (pct >= 100) clearInterval(loadInterval);
-  }, 150);
+// ═══════════════════════════════════════════════════════
+// LESSON RENDERER
+// ═══════════════════════════════════════════════════════
+function renderLesson(id) {
+  const L = COURSE.lessons.find(l => l.id === id);
+  if (!L) return;
+  currentLesson = id;
+  location.hash = id;
+  const c = document.getElementById('content');
 
+  // Estimate reading time (rough: 200 words/min)
+  const text = JSON.stringify(L.sections);
+  const words = text.split(/\s+/).length;
+  const readTime = Math.max(1, Math.round(words / 200));
+
+  let html = `<div class="lesson" style="--lesson-clr:${L.color}">`;
+  // Header
+  html += `<div class="lesson-header">
+    <div class="lesson-meta">
+      <span class="lesson-num">Lesson ${id}</span>
+      <span class="lesson-time">📖 ${readTime} min read</span>
+      ${bookmarked[id] ? '<span class="lesson-bk">★ Bookmarked</span>' : ''}
+    </div>
+    <h1 class="lesson-title"><span class="lesson-icon">${L.icon}</span> ${L.title}</h1>
+    <p class="lesson-desc">${L.desc}</p>
+    <div class="lesson-actions">
+      <button class="action-btn" onclick="toggleBookmark(${id})">${bookmarked[id]?'★ Bookmarked':'☆ Bookmark'}</button>
+      <button class="action-btn" onclick="toggleComplete(${id})">${completed[id]?'✅ Completed':'Mark Complete'}</button>
+    </div>
+  </div>`;
+
+  // Sections
+  for (const sec of L.sections) {
+    html += renderSection(sec);
+  }
+
+  // Notes section
+  const noteVal = notes[id] || '';
+  html += `<div class="lesson-notes">
+    <h3>📝 Your Notes</h3>
+    <textarea id="lesson-notes-area" placeholder="Write your notes for this lesson..." oninput="saveNote(${id}, this.value)">${noteVal}</textarea>
+  </div>`;
+
+  // Quiz
+  if (L.quiz) {
+    html += renderQuiz(L.quiz, id);
+  }
+
+  // Nav
+  const prev = id > 0 ? COURSE.lessons.find(l => l.id === id - 1) : null;
+  const next = id < COURSE.lessons.length - 1 ? COURSE.lessons.find(l => l.id === id + 1) : null;
+  html += `<div class="lesson-nav">`;
+  if (prev) html += `<button class="nav-btn prev" onclick="renderLesson(${prev.id})">← ${prev.title}</button>`;
+  else html += `<span></span>`;
+  if (next) html += `<button class="nav-btn next" onclick="renderLesson(${next.id})">${next.title} →</button>`;
+  else html += `<button class="nav-btn next" onclick="goHome()">🏠 Home</button>`;
+  html += `</div></div>`;
+
+  c.innerHTML = html;
+  window.scrollTo({top: 0});
+  highlightSidebar(id);
+  // Close sidebar on mobile
+  if (window.innerWidth <= 900) {
+    sidebarOpen = false;
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('main').classList.remove('sidebar-open');
+  }
+}
+
+function saveNote(id, val) {
+  notes[id] = val;
+  localStorage.setItem('luau_notes', JSON.stringify(notes));
+}
+
+function highlightSidebar(id) {
+  document.querySelectorAll('.sb-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.id == id);
+  });
+}
+
+function toggleBookmark(id) {
+  bookmarked[id] = !bookmarked[id];
+  localStorage.setItem('luau_bookmarked', JSON.stringify(bookmarked));
+  buildSidebar();
+  renderLesson(id);
+  toast(bookmarked[id] ? 'Bookmarked!' : 'Bookmark removed');
+}
+
+function toggleComplete(id) {
+  completed[id] = !completed[id];
+  localStorage.setItem('luau_completed', JSON.stringify(completed));
   buildSidebar();
   updateProgress();
+  renderLesson(id);
+  toast(completed[id] ? 'Marked complete!' : 'Unmarked');
+  // Check if all done
+  checkCourseComplete();
+}
 
-  // Check URL hash
-  const hash = location.hash.match(/lesson-(\d+)/);
-  const startId = hash ? parseInt(hash[1]) : 0;
-  showLesson(Math.min(startId, TOTAL - 1));
+function checkCourseComplete() {
+  const total = COURSE.lessons.filter(l=>l.quiz).length;
+  const done = Object.keys(completed).filter(k=>completed[k]).length;
+  if (done >= total && total > 0) {
+    launchConfetti();
+    setTimeout(() => toast('🎉 Course complete! Get your certificate!'), 500);
+  }
+}
 
-  // Hide loader
-  setTimeout(() => document.getElementById('loading-screen').classList.add('hide'), 800);
-})();
+// ═══════════════════════════════════════════════════════
+// SECTION RENDERERS
+// ═══════════════════════════════════════════════════════
+function renderSection(sec) {
+  if (sec.type === 'card') return renderCard(sec);
+  return '';
+}
+
+function renderCard(card) {
+  let html = `<div class="card"><h2 class="card-title">${card.title}</h2>`;
+  for (const item of card.content) {
+    html += renderContent(item);
+  }
+  html += `</div>`;
+  return html;
+}
+
+function renderContent(item) {
+  switch (item.type) {
+    case 'text': return `<div class="text-block">${item.value}</div>`;
+    case 'code': return renderCode(item);
+    case 'table': return renderTable(item);
+    case 'info': return renderInfo(item);
+    case 'chips': return renderChips(item);
+    case 'toggles': return renderToggles(item);
+    default: return '';
+  }
+}
+
+function renderCode(item) {
+  const highlighted = highlightLuau(item.code);
+  return `<div class="code-block">
+    <div class="code-header"><span class="code-lang">${item.lang || 'luau'}</span><button class="copy-btn" onclick="copyCode(this)">📋 Copy</button></div>
+    <pre><code>${highlighted}</code></pre>
+  </div>`;
+}
+
+function renderTable(item) {
+  let html = `<div class="table-wrap"><table><thead><tr>`;
+  for (const h of item.headers) html += `<th>${h}</th>`;
+  html += `</tr></thead><tbody>`;
+  for (const row of item.rows) {
+    html += `<tr>`;
+    for (const cell of row) html += `<td>${cell}</td>`;
+    html += `</tr>`;
+  }
+  html += `</tbody></table></div>`;
+  return html;
+}
+
+function renderInfo(item) {
+  const icons = {tip:'💡',warn:'⚠️',danger:'🚫',note:'📝'};
+  return `<div class="info-box ${item.variant}"><div class="info-header">${icons[item.variant]||'ℹ️'} ${item.title}</div><div class="info-body">${item.text}</div></div>`;
+}
+
+function renderChips(item) {
+  return `<div class="chips">${item.items.map(c => `<span class="chip ${c.color}">${c.text}</span>`).join('')}</div>`;
+}
+
+function renderToggles(item) {
+  return item.items.map(t => `<details${t.open?' open':''}><summary>${t.title}</summary><div class="toggle-body">${t.body}</div></details>`).join('');
+}
+
+function renderQuiz(quiz, lessonId) {
+  const qid = 'quiz_' + lessonId;
+  let html = `<div class="quiz" id="${qid}">
+    <h3 class="quiz-title">🧠 Quiz</h3>
+    <p class="quiz-q">${quiz.question}</p>
+    <div class="quiz-options">`;
+  quiz.options.forEach((opt, i) => {
+    html += `<button class="quiz-opt" onclick="checkQuiz(${lessonId},${i},this)">${opt.text}</button>`;
+  });
+  html += `</div><div class="quiz-feedback" id="qf_${lessonId}"></div></div>`;
+  return html;
+}
+
+function checkQuiz(lessonId, idx, btn) {
+  const L = COURSE.lessons.find(l => l.id === lessonId);
+  const quiz = L.quiz;
+  const correct = quiz.options[idx].correct;
+  const fb = document.getElementById('qf_' + lessonId);
+
+  // Disable all buttons
+  btn.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b, i) => {
+    b.disabled = true;
+    if (quiz.options[i].correct) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  fb.innerHTML = `<div class="quiz-result ${correct?'correct':'wrong'}">${correct ? quiz.correct : quiz.incorrect}</div>`;
+  fb.style.display = 'block';
+
+  if (correct && !completed[lessonId]) {
+    completed[lessonId] = true;
+    localStorage.setItem('luau_completed', JSON.stringify(completed));
+    buildSidebar();
+    updateProgress();
+    checkCourseComplete();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SYNTAX HIGHLIGHTER
+// ═══════════════════════════════════════════════════════
+function highlightLuau(code) {
+  code = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Comments
+  code = code.replace(/(--\[\[[\s\S]*?\]\])/g, '<span class="cmt">$1</span>');
+  code = code.replace(/(--[^\n]*)/g, '<span class="cmt">$1</span>');
+  // Strings
+  code = code.replace(/("(?:\\.|[^"\\])*")/g, '<span class="str">$1</span>');
+  code = code.replace(/('(?:\\.|[^'\\])*')/g, '<span class="str">$1</span>');
+  code = code.replace(/(`(?:\\.|[^`\\])*`)/g, '<span class="str">$1</span>');
+  // Numbers
+  code = code.replace(/\b(0[xXbB][\da-fA-F_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?)\b/g, '<span class="num">$1</span>');
+  // Keywords
+  const kw = 'local|function|end|if|then|else|elseif|for|while|do|repeat|until|return|in|not|and|or|true|false|nil|break|continue|type|export|typeof'.split('|');
+  const kwRe = new RegExp('\\b(' + kw.join('|') + ')\\b', 'g');
+  code = code.replace(kwRe, '<span class="kw">$1</span>');
+  // Built-in functions
+  code = code.replace(/\b(print|warn|error|assert|pcall|xpcall|require|tostring|tonumber|select|rawget|rawset|setmetatable|getmetatable|ipairs|pairs|next|unpack|type|typeof|task|table|string|math|coroutine|game|workspace|script|Instance|Vector3|Vector2|CFrame|Color3|BrickColor|UDim2|UDim|TweenInfo|Enum|buffer|bit32|os|debug|tick|time|wait)\b/g, '<span class="fn">$1</span>');
+  // Types after colon
+  code = code.replace(/:\s*(number|string|boolean|nil|any|thread|never|unknown|\{[^}]*\})/g, ': <span class="type">$1</span>');
+  return code;
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy', 1500);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch (e.key) {
+    case 'ArrowRight': if (currentLesson >= 0 && currentLesson < COURSE.lessons.length - 1) renderLesson(currentLesson + 1); break;
+    case 'ArrowLeft': if (currentLesson > 0) renderLesson(currentLesson - 1); break;
+    case 'h': case 'H': goHome(); break;
+    case '/': e.preventDefault(); document.getElementById('search-input').focus(); showSearch(); break;
+    case 's': case 'S': toggleSidebar(); break;
+    case 'd': case 'D': if (currentLesson >= 0) toggleComplete(currentLesson); break;
+    case 'b': case 'B': if (currentLesson >= 0) toggleBookmark(currentLesson); break;
+    case 't': case 'T': toggleTheme(); break;
+    case '?': document.getElementById('kbd-modal').classList.add('show'); break;
+    case 'Escape':
+      document.getElementById('kbd-modal').classList.remove('show');
+      document.getElementById('cert-modal').classList.remove('show');
+      break;
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+// CERTIFICATE
+// ═══════════════════════════════════════════════════════
+function showCertModal() {
+  document.getElementById('cert-modal').classList.add('show');
+  document.getElementById('cert-preview').style.display = 'none';
+  document.getElementById('cert-name-input').value = '';
+  document.getElementById('cert-name-input').focus();
+}
+
+function generateCertificate() {
+  const name = document.getElementById('cert-name-input').value.trim();
+  if (!name) { toast('Please enter your name!'); return; }
+
+  const canvas = document.getElementById('cert-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Background
+  ctx.fillStyle = '#0a0e17';
+  ctx.fillRect(0, 0, W, H);
+
+  // Border gradient
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#3af0c8');
+  grad.addColorStop(0.5, '#38bdf8');
+  grad.addColorStop(1, '#a78bfa');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 4;
+  ctx.strokeRect(20, 20, W - 40, H - 40);
+
+  // Inner border
+  ctx.strokeStyle = 'rgba(58,240,200,0.2)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(35, 35, W - 70, H - 70);
+
+  // Corner accents
+  const cornerSize = 30;
+  ctx.strokeStyle = '#3af0c8';
+  ctx.lineWidth = 3;
+  [[35,35,1,1],[W-35,35,-1,1],[35,H-35,1,-1],[W-35,H-35,-1,-1]].forEach(([x,y,dx,dy]) => {
+    ctx.beginPath(); ctx.moveTo(x, y + cornerSize*dy); ctx.lineTo(x, y); ctx.lineTo(x + cornerSize*dx, y); ctx.stroke();
+  });
+
+  // Logo
+  ctx.fillStyle = '#3af0c8';
+  ctx.font = 'bold 28px "Outfit", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('LuaU Mastery', W/2, 100);
+
+  // Title
+  ctx.fillStyle = '#ccd9e8';
+  ctx.font = '18px "Outfit", sans-serif';
+  ctx.fillText('CERTIFICATE OF COMPLETION', W/2, 145);
+
+  // Divider
+  const divGrad = ctx.createLinearGradient(W/2-150, 0, W/2+150, 0);
+  divGrad.addColorStop(0, 'transparent');
+  divGrad.addColorStop(0.5, '#3af0c8');
+  divGrad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = divGrad;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(W/2-150, 165); ctx.lineTo(W/2+150, 165); ctx.stroke();
+
+  // "This certifies that"
+  ctx.fillStyle = '#7b9ab8';
+  ctx.font = '16px "Outfit", sans-serif';
+  ctx.fillText('This certifies that', W/2, 220);
+
+  // Name
+  ctx.fillStyle = '#3af0c8';
+  ctx.font = 'bold 42px "Outfit", sans-serif';
+  ctx.fillText(name, W/2, 280);
+
+  // Under name divider
+  ctx.strokeStyle = 'rgba(58,240,200,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W/2-200, 300); ctx.lineTo(W/2+200, 300); ctx.stroke();
+
+  // Description
+  ctx.fillStyle = '#ccd9e8';
+  ctx.font = '16px "Outfit", sans-serif';
+  ctx.fillText('has successfully completed the entire', W/2, 345);
+  ctx.font = 'bold 22px "Outfit", sans-serif';
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillText('LuaU Mastery: Complete Roblox Luau Course', W/2, 380);
+
+  ctx.fillStyle = '#7b9ab8';
+  ctx.font = '15px "Outfit", sans-serif';
+  ctx.fillText(`36 lessons · 180+ code examples · 36 quizzes`, W/2, 420);
+  ctx.fillText('From fundamentals to expert-level Roblox services', W/2, 445);
+
+  // Sections covered
+  ctx.fillStyle = '#3f5a75';
+  ctx.font = '13px "DM Mono", monospace';
+  const sections = ['Fundamentals','Data Structures','Advanced Luau','Standard Libraries','Roblox Core',
+    'Roblox Advanced','Roblox Services','Service Deep Dives','Expert Services'];
+  ctx.fillText(sections.join('  ·  '), W/2, 490);
+
+  // Date
+  ctx.fillStyle = '#7b9ab8';
+  ctx.font = '15px "Outfit", sans-serif';
+  const date = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+  ctx.fillText(`Completed on ${date}`, W/2, 550);
+
+  // Signature line
+  ctx.strokeStyle = 'rgba(58,240,200,0.3)';
+  ctx.beginPath(); ctx.moveTo(W/2-120, 630); ctx.lineTo(W/2+120, 630); ctx.stroke();
+  ctx.fillStyle = '#3af0c8';
+  ctx.font = 'italic 20px "DM Mono", monospace';
+  ctx.fillText('LuaU Mastery', W/2, 620);
+  ctx.fillStyle = '#3f5a75';
+  ctx.font = '12px "Outfit", sans-serif';
+  ctx.fillText('Course Platform', W/2, 650);
+
+  // Credential ID
+  const credId = 'LM-' + Date.now().toString(36).toUpperCase();
+  ctx.fillStyle = '#263852';
+  ctx.font = '11px "DM Mono", monospace';
+  ctx.fillText(`Credential ID: ${credId}`, W/2, H - 50);
+
+  document.getElementById('cert-preview').style.display = 'block';
+}
+
+function downloadCertificate() {
+  const canvas = document.getElementById('cert-canvas');
+  const link = document.createElement('a');
+  link.download = 'LuaU_Mastery_Certificate.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function printCertificate() {
+  const canvas = document.getElementById('cert-canvas');
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>Certificate</title><style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#000}img{max-width:100%;height:auto}@media print{body{background:#fff}}</style></head><body><img src="${canvas.toDataURL('image/png')}"><script>setTimeout(()=>{window.print()},300)<\/script></body></html>`);
+}
+
+// ═══════════════════════════════════════════════════════
+// CONFETTI
+// ═══════════════════════════════════════════════════════
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+
+  const particles = [];
+  const colors = ['#3af0c8','#38bdf8','#fb923c','#a78bfa','#fde68a','#f87171','#4ade80'];
+
+  for (let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 200,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 6 + 2,
+      vx: (Math.random() - 0.5) * 6,
+      vy: Math.random() * 4 + 2,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 1,
+    });
+  }
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    for (const p of particles) {
+      if (p.life <= 0) continue;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.08;
+      p.rot += p.vr;
+      if (p.y > canvas.height + 20) { p.life = 0; continue; }
+      if (frame > 120) p.life -= 0.02;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+    frame++;
+    if (alive) requestAnimationFrame(animate);
+    else { canvas.style.display = 'none'; }
+  }
+  animate();
+}
 </script>
-
-
 </body>
 </html>
