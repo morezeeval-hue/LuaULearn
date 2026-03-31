@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuaU Mastery — Complete Roblox Luau Course</title>
+<meta name="description" content="The complete free Roblox Luau programming course. 24 lessons, 120+ examples, quizzes. From beginner to expert.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="scroll-bar"><div id="scroll-fill"></div></div>
+
+<header id="header">
+  <button id="menu-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo">
+    <div class="logo-icon">Lu</div>
+    <span class="logo-text"><span>Lua</span>U Mastery</span>
+  </div>
+  <div id="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search lessons..." id="search-input" oninput="onSearch(this.value)" onfocus="onSearch(this.value)" autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="progress-pill"><span id="progress-text">0 / 24</span></div>
+</header>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+
+<div id="layout">
+  <nav id="sidebar"></nav>
+  <main id="main"></main>
+</div>
+
+<div id="toast">✓ Copied to clipboard!</div>
+
+<script src="content.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// LuaU Mastery — Rendering Engine
+// This file reads COURSE data from content.js and renders
+// the entire site. You should never need to edit this file
+// to add or modify lesson content.
+// ═══════════════════════════════════════════════════════
+
+const TOTAL = COURSE.lessons.length;
+const done = new Set();
+let currentLesson = 0;
+
+// ─── SYNTAX HIGHLIGHTER ──────────────────────────
+function highlight(code) {
+  const KW = /\b(local|function|end|if|then|else|elseif|for|in|do|while|repeat|until|return|break|continue|and|or|not|true|false|nil|type|export|typeof)\b/g;
+  const BI = /\b(print|warn|error|assert|pcall|xpcall|require|tostring|tonumber|setmetatable|getmetatable|rawset|rawget|select|unpack|ipairs|pairs|next|coroutine|task|table|string|math|buffer|bit32|os|debug|game|workspace|script|Instance|Vector3|Vector2|CFrame|Color3|BrickColor|UDim2|UDim|Enum|TweenInfo|Ray|tick|time|wait|spawn|delay)\b/g;
+  const e = (s) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let result = '';
+  const lines = code.split('\n');
+  for (const line of lines) {
+    let l = e(line);
+    // Comments
+    l = l.replace(/(--.*)/g, '<span class="tok-cmt">$1</span>');
+    // Strings (simplified)
+    l = l.replace(/(?<!-)("(?:[^"\\]|\\.)*")/g, '<span class="tok-str">$1</span>');
+    l = l.replace(/(?<!--)('(?:[^'\\]|\\.)*')/g, '<span class="tok-str">$1</span>');
+    l = l.replace(/(`(?:[^`\\]|\\.)*`)/g, '<span class="tok-str">$1</span>');
+    // Numbers
+    l = l.replace(/\b(0[xXbB][0-9a-fA-F_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?)\b/g, '<span class="tok-num">$1</span>');
+    // Keywords
+    l = l.replace(KW, '<span class="tok-kw">$1</span>');
+    // Builtins
+    l = l.replace(BI, '<span class="tok-bi">$1</span>');
+    result += l + '\n';
+  }
+  return result.trimEnd();
+}
+
+// ─── RENDERERS ──────────────────────────────────
+function renderCode(item) {
+  const lang = item.lang || 'luau';
+  return `<div class="code-block">
+    <div class="code-bar">
+      <div class="code-dots"><span></span><span></span><span></span></div>
+      <span class="code-lang">${lang}</span>
+      <button class="code-copy" onclick="copyCode(this)">copy</button>
+    </div>
+    <pre>${lang === 'luau' ? highlight(item.code) : item.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+  </div>`;
+}
+
+function renderInfo(item) {
+  return `<div class="info-box ${item.variant}">
+    <span class="ib-title">${item.title}</span>
+    <p>${item.text}</p>
+  </div>`;
+}
+
+function renderTable(item) {
+  const ths = item.headers.map(h => `<th>${h}</th>`).join('');
+  const trs = item.rows.map(row => {
+    const tds = row.map((cell, i) => {
+      const cls = i === 0 ? 'td-key' : (i === row.length - 1 && item.headers.length > 2 ? 'td-desc' : '');
+      return `<td class="${cls}">${cell}</td>`;
+    }).join('');
+    return `<tr>${tds}</tr>`;
+  }).join('');
+  return `<table class="data-table"><tr>${ths}</tr>${trs}</table>`;
+}
+
+function renderToggles(item) {
+  return item.items.map(t => `
+    <div class="toggle-item${t.open ? ' open' : ''}">
+      <div class="toggle-head" onclick="this.parentElement.classList.toggle('open')">
+        <span>${t.title}</span><span class="toggle-arrow">▶</span>
+      </div>
+      <div class="toggle-body">${t.body}</div>
+    </div>
+  `).join('');
+}
+
+function renderChips(item) {
+  return `<div class="chip-row">${item.items.map(c =>
+    `<span class="chip ${c.color}">${c.text}</span>`
+  ).join('')}</div>`;
+}
+
+function renderContent(items) {
+  return items.map(item => {
+    switch(item.type) {
+      case 'text': return `<p>${item.value}</p>`;
+      case 'code': return renderCode(item);
+      case 'info': return renderInfo(item);
+      case 'table': return renderTable(item);
+      case 'toggles': return renderToggles(item);
+      case 'chips': return renderChips(item);
+      default: return '';
+    }
+  }).join('');
+}
+
+function renderQuiz(quiz, lessonId) {
+  if (!quiz) return '';
+  const keys = ['A','B','C','D','E','F'];
+  const opts = quiz.options.map((o, i) =>
+    `<div class="quiz-opt" data-correct="${o.correct}" onclick="answerQuiz(this)">
+      <span class="opt-key">${keys[i]}</span>${o.text}
+    </div>`
+  ).join('');
+  const nextId = lessonId < TOTAL - 1 ? lessonId + 1 : null;
+  const nextBtn = nextId !== null
+    ? `<button class="nav-btn primary" style="display:none;margin-top:14px" data-quiz-next onclick="showLesson(${nextId})">Next Lesson →</button>`
+    : `<button class="nav-btn primary" style="display:none;margin-top:14px" data-quiz-next onclick="finishCourse()">Complete Course 🎓</button>`;
+  return `<div class="quiz-card" data-answered="">
+    <span class="quiz-badge">QUIZ</span>
+    <div class="quiz-q">${quiz.question}</div>
+    <div class="quiz-options">${opts}</div>
+    <div class="quiz-feedback ok">${quiz.correct}</div>
+    <div class="quiz-feedback fail">${quiz.incorrect}</div>
+    ${nextBtn}
+  </div>`;
+}
+
+function renderLesson(lesson) {
+  let html = '';
+  if (lesson.isHero) {
+    html += `<section class="hero">
+      <div class="hero-badge">Complete Luau Course — 24 Lessons</div>
+      <h1 class="hero-title">Master <span class="hl">LuaU</span><br>for Roblox</h1>
+      <p class="hero-sub">${COURSE.subtitle}</p>
+      <button class="hero-cta" onclick="showLesson(1)">Start Learning →</button>
+      <div class="stats-row">${COURSE.stats.map(s =>
+        `<div class="stat-card"><span class="stat-num">${s.num}</span><span class="stat-label">${s.label}</span></div>`
+      ).join('')}</div>
+    </section>`;
+  } else {
+    html += `<div class="lesson-header">
+      <div class="lesson-icon" style="background:linear-gradient(135deg,${lesson.color}22,${lesson.color}44)">${lesson.icon}</div>
+      <div>
+        <div class="lesson-title">${lesson.title}</div>
+        <div class="lesson-desc">${lesson.desc}</div>
+      </div>
+    </div>`;
+  }
+
+  for (const section of lesson.sections) {
+    if (section.type === 'card') {
+      html += `<div class="card">
+        <div class="card-header">${section.title}</div>
+        <div class="card-body">${renderContent(section.content)}</div>
+      </div>`;
+    }
+  }
+
+  html += renderQuiz(lesson.quiz, lesson.id);
+
+  // Navigation
+  const prev = lesson.id > 0 ? lesson.id - 1 : null;
+  const next = lesson.id < TOTAL - 1 ? lesson.id + 1 : null;
+  html += '<div class="lesson-nav">';
+  if (prev !== null) html += `<button class="nav-btn" onclick="showLesson(${prev})">← ${COURSE.lessons[prev].title}</button>`;
+  if (next !== null) html += `<button class="nav-btn primary" onclick="showLesson(${next})">${COURSE.lessons[next].title} →</button>`;
+  html += '</div>';
+
+  return html;
+}
+
+// ─── SIDEBAR ──────────────────────────────────
+function buildSidebar() {
+  const sb = document.getElementById('sidebar');
+  let html = '';
+  for (const group of COURSE.groups) {
+    html += `<div class="sidebar-group-label">${group.label}</div>`;
+    for (const id of group.lessons) {
+      const l = COURSE.lessons[id];
+      html += `<div class="nav-item${id===0?' active':''}" id="nav-${id}" onclick="showLesson(${id})">
+        <span class="nav-icon">${l.icon}</span>${l.title}
+        <span class="nav-check" id="chk-${id}"></span>
+      </div>`;
+    }
+  }
+  sb.innerHTML = html;
+}
+
+// ─── NAVIGATION ──────────────────────────────────
+function showLesson(id) {
+  currentLesson = id;
+  const main = document.getElementById('main');
+  // Remove old lessons
+  main.innerHTML = `<div class="lesson active" id="lesson-${id}">${renderLesson(COURSE.lessons[id])}</div>`;
+
+  // Update sidebar
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const nav = document.getElementById('nav-' + id);
+  if (nav) nav.classList.add('active');
+
+  markDone(id);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (window.innerWidth < 768) closeSidebar();
+
+  // Save to URL hash
+  history.replaceState(null, '', '#lesson-' + id);
+}
+
+function markDone(id) {
+  done.add(id);
+  const chk = document.getElementById('chk-' + id);
+  const nav = document.getElementById('nav-' + id);
+  if (chk) chk.textContent = '✓';
+  if (nav) nav.classList.add('done');
+  // Save progress
+  try { localStorage.setItem('luau-done', JSON.stringify([...done])); } catch(e) {}
+}
+
+function updateProgress() {
+  document.getElementById('progress-text').textContent = `${done.size} / ${TOTAL}`;
+}
+
+// ─── QUIZ ──────────────────────────────────
+function answerQuiz(opt) {
+  const quiz = opt.closest('.quiz-card');
+  if (quiz.dataset.answered === 'true') return;
+  quiz.dataset.answered = 'true';
+
+  const isCorrect = opt.dataset.correct === 'true';
+  const opts = quiz.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.classList.add('disabled'));
+
+  if (isCorrect) {
+    opt.classList.add('correct');
+    quiz.querySelector('.quiz-feedback.ok').classList.add('show');
+  } else {
+    opt.classList.add('wrong');
+    quiz.querySelector('.quiz-feedback.fail').classList.add('show');
+    opts.forEach(o => { if (o.dataset.correct === 'true') o.classList.add('correct'); });
+  }
+
+  const nextBtn = quiz.querySelector('[data-quiz-next]');
+  if (nextBtn) nextBtn.style.display = 'inline-flex';
+}
+
+// ─── SIDEBAR TOGGLE ──────────────────────────
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  if (window.innerWidth < 768) {
+    sb.classList.toggle('show');
+    ov.classList.toggle('show');
+  } else {
+    sb.classList.toggle('hidden');
+    document.getElementById('main').classList.toggle('expanded');
+  }
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ─── COPY CODE ──────────────────────────────────
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ─── SEARCH ──────────────────────────────────
+function onSearch(query) {
+  const box = document.getElementById('search-results');
+  if (!query || query.length < 2) { box.classList.remove('show'); return; }
+  const q = query.toLowerCase();
+  const results = [];
+  for (const lesson of COURSE.lessons) {
+    if (lesson.title.toLowerCase().includes(q) || lesson.desc.toLowerCase().includes(q)) {
+      results.push(lesson);
+    } else {
+      for (const s of lesson.sections) {
+        if (s.title && s.title.toLowerCase().includes(q)) {
+          results.push(lesson); break;
+        }
+      }
+    }
+  }
+  if (results.length === 0) { box.classList.remove('show'); return; }
+  const group = (id) => {
+    for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; }
+    return '';
+  };
+  box.innerHTML = results.slice(0, 8).map(r => `
+    <div class="search-item" onclick="showLesson(${r.id}); document.getElementById('search-input').value=''; document.getElementById('search-results').classList.remove('show');">
+      <span class="si-icon">${r.icon}</span>
+      <div><div class="si-title">${r.title}</div><div class="si-group">${group(r.id)}</div></div>
+    </div>
+  `).join('');
+  box.classList.add('show');
+}
+
+// Close search on click outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#search-box')) {
+    document.getElementById('search-results').classList.remove('show');
+  }
+});
+
+// ─── SCROLL PROGRESS ──────────────────────────
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = doc.scrollHeight > doc.clientHeight
+    ? (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100 : 0;
+  document.getElementById('scroll-fill').style.width = pct + '%';
+});
+
+// ─── FINISH ──────────────────────────────────
+function finishCourse() {
+  for (let i = 0; i < TOTAL; i++) markDone(i);
+  updateProgress();
+  const main = document.getElementById('main');
+  main.innerHTML = `<div class="lesson active">
+    <div style="text-align:center;padding:70px 20px">
+      <div style="font-size:80px;margin-bottom:28px">🎓</div>
+      <h1 style="font-size:42px;font-weight:800;letter-spacing:-1px;margin-bottom:16px">Course Complete!</h1>
+      <p style="color:var(--text2);font-family:var(--mono);font-size:14px;max-width:500px;margin:0 auto 36px;line-height:1.8">
+        You've mastered LuaU — variables, types, operators, control flow, functions, tables, strings,
+        metatables, OOP, the type system, modules, coroutines, error handling, all standard libraries,
+        Roblox instances, services, events, client-server, datastores, tweens, input, raycasting, GUI,
+        parallel Luau, and performance optimization.
+      </p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <button onclick="showLesson(0)" class="nav-btn" style="flex:0">← Back to Start</button>
+        <button onclick="showLesson(1)" class="hero-cta">Review Lessons →</button>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── KEYBOARD NAV ──────────────────────────────
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowRight' && currentLesson < TOTAL - 1) showLesson(currentLesson + 1);
+  if (e.key === 'ArrowLeft' && currentLesson > 0) showLesson(currentLesson - 1);
+});
+
+// ─── INIT ──────────────────────────────────
+(function init() {
+  buildSidebar();
+
+  // Restore progress
+  try {
+    const saved = JSON.parse(localStorage.getItem('luau-done') || '[]');
+    saved.forEach(id => markDone(id));
+  } catch(e) {}
+
+  // Check URL hash
+  const hash = location.hash.match(/lesson-(\d+)/);
+  const startId = hash ? parseInt(hash[1]) : 0;
+  showLesson(Math.min(startId, TOTAL - 1));
+  updateProgress();
+})();
+</script>
+</body>
+</html>
