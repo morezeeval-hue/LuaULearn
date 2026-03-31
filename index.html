@@ -107,13 +107,22 @@ function highlight(code) {
   const e = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return code.split('\n').map(line => {
     let l = e(line);
-    l = l.replace(/(--.*)/g, '<span class="cmt">$1</span>');
-    l = l.replace(/(?<!-)("(?:[^"\\]|\\.)*")/g, '<span class="str">$1</span>');
-    l = l.replace(/(?<!--)('(?:[^'\\]|\\.)*')/g, '<span class="str">$1</span>');
-    l = l.replace(/(`(?:[^`\\]|\\.)*`)/g, '<span class="str">$1</span>');
+    // Extract comments and strings first, replace with placeholders
+    const tokens = [];
+    let idx = 0;
+    function stash(match) { const ph = '\x00T' + idx + '\x00'; tokens[idx] = match; idx++; return ph; }
+    // Comments
+    l = l.replace(/(--.*)/g, (m) => stash('<span class="cmt">' + m + '</span>'));
+    // Strings (double, single, backtick)
+    l = l.replace(/("(?:[^"\\]|\\.)*")/g, (m) => stash('<span class="str">' + m + '</span>'));
+    l = l.replace(/('(?:[^'\\]|\\.)*')/g, (m) => stash('<span class="str">' + m + '</span>'));
+    l = l.replace(/(`(?:[^`\\]|\\.)*`)/g, (m) => stash('<span class="str">' + m + '</span>'));
+    // Numbers, keywords, builtins on remaining text
     l = l.replace(/\b(0[xXbB][0-9a-fA-F_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?)\b/g, '<span class="num">$1</span>');
     l = l.replace(KW, '<span class="kw">$1</span>');
     l = l.replace(BI, '<span class="fn">$1</span>');
+    // Restore placeholders
+    l = l.replace(/\x00T(\d+)\x00/g, (_, i) => tokens[parseInt(i)]);
     return l;
   }).join('\n').trimEnd();
 }
@@ -364,13 +373,29 @@ function onSearch(query) {
   const q = query.toLowerCase();
   const results = [];
   for (const lesson of COURSE.lessons) {
+    let found = false;
     if (lesson.title.toLowerCase().includes(q) || lesson.desc.toLowerCase().includes(q)) {
-      results.push(lesson);
-    } else {
+      found = true;
+    }
+    if (!found) {
       for (const s of lesson.sections) {
-        if (s.title && s.title.toLowerCase().includes(q)) { results.push(lesson); break; }
+        if (s.title && s.title.toLowerCase().includes(q)) { found = true; break; }
+        if (s.content) {
+          for (const item of s.content) {
+            if (item.type === 'text' && item.value && item.value.toLowerCase().includes(q)) { found = true; break; }
+            if (item.type === 'code' && item.code && item.code.toLowerCase().includes(q)) { found = true; break; }
+            if (item.items) {
+              for (const sub of item.items) {
+                if ((sub.title && sub.title.toLowerCase().includes(q)) || (sub.body && sub.body.toLowerCase().includes(q)) || (sub.text && sub.text.toLowerCase().includes(q))) { found = true; break; }
+              }
+              if (found) break;
+            }
+          }
+          if (found) break;
+        }
       }
     }
+    if (found) results.push(lesson);
   }
   if (results.length === 0) { box.classList.remove('show'); return; }
   const group = id => { for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; } return ''; };
@@ -463,6 +488,23 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
+// ─── THEME TOGGLE ──────────────────────────
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.getAttribute('data-theme') === 'light';
+  html.setAttribute('data-theme', isLight ? 'dark' : 'light');
+  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('luau-theme', isLight ? 'dark' : 'light');
+}
+(function() {
+  const saved = localStorage.getItem('luau-theme');
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = '🌙';
+  }
+})();
+
 // ─── INIT ──────────────────────────────────
 (function init() {
   // Loading animation
@@ -488,22 +530,6 @@ function toast(msg) {
 })();
 </script>
 
-// ─── THEME TOGGLE ──────────────────────────
-function toggleTheme() {
-  const html = document.documentElement;
-  const isLight = html.getAttribute('data-theme') === 'light';
-  html.setAttribute('data-theme', isLight ? 'dark' : 'light');
-  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
-  localStorage.setItem('luau-theme', isLight ? 'dark' : 'light');
-}
-// Restore theme
-(function() {
-  const saved = localStorage.getItem('luau-theme');
-  if (saved === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = '🌙';
-  }
-})();
+
 </body>
 </html>
