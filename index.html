@@ -58,12 +58,24 @@
     <div id="prog-track"><div id="prog-fill"></div></div>
     <span id="prog-label">0 / 24</span>
   </div>
-  <button id="theme-toggle" class="kbd-hint" onclick="toggleTheme()" title="Toggle light/dark theme">☀️</button>
-  <div class="kbd-hint" onclick="document.getElementById('kbd-modal').classList.add('show')">?</div>
+  <button id="theme-toggle" class="kbd-hint header-btn" onclick="toggleTheme()" title="Toggle light/dark theme">☀️</button>
+  <div class="kbd-hint header-kbd-hint" onclick="document.getElementById('kbd-modal').classList.add('show')">?</div>
 </header>
 
 <!-- SIDEBAR OVERLAY -->
 <div id="sidebar-overlay"></div>
+
+
+<!-- MOBILE TOOLBAR -->
+<div id="mobile-toolbar">
+  <div class="mob-search-wrap">
+    <span class="mob-search-icon">🔍</span>
+    <input type="text" class="mob-search" placeholder="Search lessons…" id="mob-search-input" oninput="onMobileSearch(this.value)" onfocus="onMobileSearch(this.value)" autocomplete="off">
+    <div id="mob-search-results"></div>
+  </div>
+  <button class="mob-btn" onclick="toggleTheme()" id="mob-theme-btn" title="Toggle theme">☀️</button>
+  <button class="mob-btn" onclick="document.getElementById('kbd-modal').classList.add('show')" title="Keyboard shortcuts">⌨️</button>
+</div>
 
 <!-- LAYOUT -->
 <div id="layout" style="display:flex;padding-top:var(--header-h);min-height:100vh">
@@ -107,21 +119,16 @@ function highlight(code) {
   const e = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return code.split('\n').map(line => {
     let l = e(line);
-    // Extract comments and strings first, replace with placeholders
     const tokens = [];
     let idx = 0;
     function stash(match) { const ph = '\x00T' + idx + '\x00'; tokens[idx] = match; idx++; return ph; }
-    // Comments
     l = l.replace(/(--.*)/g, (m) => stash('<span class="cmt">' + m + '</span>'));
-    // Strings (double, single, backtick)
     l = l.replace(/("(?:[^"\\]|\\.)*")/g, (m) => stash('<span class="str">' + m + '</span>'));
     l = l.replace(/('(?:[^'\\]|\\.)*')/g, (m) => stash('<span class="str">' + m + '</span>'));
     l = l.replace(/(`(?:[^`\\]|\\.)*`)/g, (m) => stash('<span class="str">' + m + '</span>'));
-    // Numbers, keywords, builtins on remaining text
     l = l.replace(/\b(0[xXbB][0-9a-fA-F_]+|\d[\d_]*\.?[\d_]*(?:[eE][+-]?\d+)?)\b/g, '<span class="num">$1</span>');
     l = l.replace(KW, '<span class="kw">$1</span>');
     l = l.replace(BI, '<span class="fn">$1</span>');
-    // Restore placeholders
     l = l.replace(/\x00T(\d+)\x00/g, (_, i) => tokens[parseInt(i)]);
     return l;
   }).join('\n').trimEnd();
@@ -367,16 +374,11 @@ function pickQuizAnswer(opt, qid) {
 }
 
 // ─── SEARCH ──────────────────────────────────
-function onSearch(query) {
-  const box = document.getElementById('search-results');
-  if (!query || query.length < 2) { box.classList.remove('show'); return; }
-  const q = query.toLowerCase();
+function searchLessons(q) {
   const results = [];
   for (const lesson of COURSE.lessons) {
     let found = false;
-    if (lesson.title.toLowerCase().includes(q) || lesson.desc.toLowerCase().includes(q)) {
-      found = true;
-    }
+    if (lesson.title.toLowerCase().includes(q) || lesson.desc.toLowerCase().includes(q)) found = true;
     if (!found) {
       for (const s of lesson.sections) {
         if (s.title && s.title.toLowerCase().includes(q)) { found = true; break; }
@@ -397,6 +399,14 @@ function onSearch(query) {
     }
     if (found) results.push(lesson);
   }
+  return results;
+}
+
+function onSearch(query) {
+  const box = document.getElementById('search-results');
+  if (!query || query.length < 2) { box.classList.remove('show'); return; }
+  const q = query.toLowerCase();
+  const results = searchLessons(q);
   if (results.length === 0) { box.classList.remove('show'); return; }
   const group = id => { for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; } return ''; };
   box.innerHTML = results.slice(0, 8).map(r => `
@@ -488,12 +498,15 @@ function toast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
+
 // ─── THEME TOGGLE ──────────────────────────
 function toggleTheme() {
   const html = document.documentElement;
   const isLight = html.getAttribute('data-theme') === 'light';
   html.setAttribute('data-theme', isLight ? 'dark' : 'light');
   document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+  const mobBtn = document.getElementById('mob-theme-btn');
+  if (mobBtn) mobBtn.textContent = isLight ? '☀️' : '🌙';
   localStorage.setItem('luau-theme', isLight ? 'dark' : 'light');
 }
 (function() {
@@ -502,8 +515,27 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-theme', 'light');
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.textContent = '🌙';
+    const mobBtn = document.getElementById('mob-theme-btn');
+    if (mobBtn) mobBtn.textContent = '🌙';
   }
 })();
+
+// ─── MOBILE SEARCH ──────────────────────────
+function onMobileSearch(query) {
+  const box = document.getElementById('mob-search-results');
+  if (!query || query.length < 2) { box.classList.remove('show'); return; }
+  const results = searchLessons(query.toLowerCase());
+  if (results.length === 0) { box.classList.remove('show'); return; }
+  const group = id => { for (const g of COURSE.groups) { if (g.lessons.includes(id)) return g.label; } return ''; };
+  box.innerHTML = results.slice(0, 8).map(r => `
+    <div class="search-item" onclick="showLesson(${r.id});document.getElementById('mob-search-input').value='';document.getElementById('mob-search-results').classList.remove('show');">
+      <span class="si-icon">${r.icon}</span><div><div class="si-title">${r.title}</div><div class="si-group">${group(r.id)}</div></div>
+    </div>`).join('');
+  box.classList.add('show');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#mobile-toolbar')) document.getElementById('mob-search-results').classList.remove('show');
+});
 
 // ─── INIT ──────────────────────────────────
 (function init() {
